@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import SafeAreaView from '@/components/ios/SafeAreaView';
 import IOSCard from '@/components/ios/IOSCard';
 import IOSButton from '@/components/ios/IOSButton';
+import WellnessCheckIn from '@/components/WellnessCheckIn';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useHealthGoals } from '@/hooks/useHealthGoals';
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
   const { goals, loading: goalsLoading, updateGoalProgress } = useHealthGoals();
+  const [showWellnessCheckIn, setShowWellnessCheckIn] = useState(false);
 
   const [greeting] = useState(() => {
     const hour = new Date().getHours();
@@ -181,7 +183,12 @@ const Dashboard = () => {
                 <FileText className="h-4 w-4 mb-1" />
                 <span className="text-xs">Upload</span>
               </IOSButton>
-              <IOSButton variant="outline" size="sm" className="flex-col h-16 justify-center">
+              <IOSButton 
+                variant="outline" 
+                size="sm" 
+                className="flex-col h-16 justify-center"
+                onClick={() => setShowWellnessCheckIn(true)}
+              >
                 <Heart className="h-4 w-4 mb-1" />
                 <span className="text-xs">Wellness</span>
               </IOSButton>
@@ -263,6 +270,11 @@ const Dashboard = () => {
             </p>
           </IOSCard>
         </div>
+
+        {/* Wellness Check-In Modal */}
+        {showWellnessCheckIn && (
+          <WellnessCheckIn onClose={() => setShowWellnessCheckIn(false)} />
+        )}
       </div>
     </SafeAreaView>
   );
