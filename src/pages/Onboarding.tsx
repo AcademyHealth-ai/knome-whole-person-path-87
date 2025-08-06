@@ -1,270 +1,377 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { SafeAreaView } from "@/components/ios/SafeAreaView";
+import { IOSCard } from "@/components/ios/IOSCard";
+import { IOSButton } from "@/components/ios/IOSButton";
+import { Heart, Target, Users, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Hammer, Search, Shield, Users, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
+const ONBOARDING_STEPS = [
+  "welcome",
+  "profile",
+  "goals", 
+  "complete"
+] as const;
 
-const Onboarding = () => {
-  const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [answers, setAnswers] = useState({
-    groupType: '',
-    stressLevel: '',
-    goals: '',
-    mindset: '',
-    journalPreference: ''
+type OnboardingStep = typeof ONBOARDING_STEPS[number];
+
+interface ProfileData {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+}
+
+const GOAL_OPTIONS = [
+  {
+    type: "mental_wellness",
+    title: "Mental Wellness",
+    description: "Track mood, stress, and emotional well-being",
+    icon: Heart,
+    color: "bg-pink-500/10 text-pink-600"
+  },
+  {
+    type: "physical_fitness", 
+    title: "Physical Fitness",
+    description: "Monitor exercise, movement, and physical health",
+    icon: Target,
+    color: "bg-blue-500/10 text-blue-600"
+  },
+  {
+    type: "nutrition",
+    title: "Nutrition",
+    description: "Track eating habits and nutritional goals",
+    icon: Sparkles,
+    color: "bg-green-500/10 text-green-600"
+  },
+  {
+    type: "sleep",
+    title: "Sleep Quality",
+    description: "Monitor sleep patterns and recovery",
+    icon: Users,
+    color: "bg-purple-500/10 text-purple-600"
+  }
+];
+
+export default function Onboarding() {
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>("welcome");
+  const [profileData, setProfileData] = useState<ProfileData>({
+    firstName: "",
+    lastName: "",
+    dateOfBirth: ""
   });
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const totalSteps = 5;
-  const progress = (currentStep / totalSteps) * 100;
-
-  const groupTypes = [
-    {
-      value: 'builders',
-      title: 'Builders',
-      description: 'I like creating, making things, and solving problems with my hands',
-      icon: Hammer,
-      color: 'from-orange-500 to-red-500'
-    },
-    {
-      value: 'seekers',
-      title: 'Seekers',
-      description: 'I love learning new things and exploring ideas',
-      icon: Search,
-      color: 'from-blue-500 to-purple-500'
-    },
-    {
-      value: 'survivors',
-      title: 'Survivors',
-      description: 'I focus on staying strong and helping myself and others get through challenges',
-      icon: Shield,
-      color: 'from-green-500 to-teal-500'
-    },
-    {
-      value: 'connectors',
-      title: 'Connectors',
-      description: 'I enjoy bringing people together and building relationships',
-      icon: Users,
-      color: 'from-pink-500 to-purple-500'
-    }
-  ];
+  const stepIndex = ONBOARDING_STEPS.indexOf(currentStep);
+  const progress = ((stepIndex + 1) / ONBOARDING_STEPS.length) * 100;
 
   const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      navigate('/dashboard');
+    const currentIndex = ONBOARDING_STEPS.indexOf(currentStep);
+    if (currentIndex < ONBOARDING_STEPS.length - 1) {
+      setCurrentStep(ONBOARDING_STEPS[currentIndex + 1]);
     }
   };
 
   const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+    const currentIndex = ONBOARDING_STEPS.indexOf(currentStep);
+    if (currentIndex > 0) {
+      setCurrentStep(ONBOARDING_STEPS[currentIndex - 1]);
     }
   };
 
-  const updateAnswer = (key: string, value: string) => {
-    setAnswers(prev => ({ ...prev, [key]: value }));
+  const toggleGoal = (goalType: string) => {
+    setSelectedGoals(prev => 
+      prev.includes(goalType) 
+        ? prev.filter(g => g !== goalType)
+        : [...prev, goalType]
+    );
   };
 
-  const renderStep = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Which group feels most like you?</h2>
-              <p className="text-gray-600">This helps us personalize your experience from the start.</p>
-            </div>
-            
-            <div className="grid gap-4">
-              {groupTypes.map((group) => (
-                <Card 
-                  key={group.value}
-                  className={`cursor-pointer transition-all duration-300 hover:shadow-lg border-2 ${
-                    answers.groupType === group.value 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => updateAnswer('groupType', group.value)}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${group.color} flex items-center justify-center`}>
-                        <group.icon className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg text-gray-800">{group.title}</h3>
-                        <p className="text-gray-600 text-sm">{group.description}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        );
+  const handleComplete = async () => {
+    setIsLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
 
-      case 2:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">How has stress been for you lately?</h2>
-              <p className="text-gray-600">Be honest - this helps Charlie understand how to support you.</p>
-            </div>
-            
-            <RadioGroup value={answers.stressLevel} onValueChange={(value) => updateAnswer('stressLevel', value)}>
-              {[
-                { value: 'low', label: 'Pretty manageable - I feel in control' },
-                { value: 'medium', label: 'Some ups and downs, but okay overall' },
-                { value: 'high', label: 'Pretty overwhelming - hard to keep up' },
-                { value: 'very-high', label: 'Really struggling - need more support' }
-              ].map((option) => (
-                <div key={option.value} className="flex items-center space-x-2 p-4 rounded-lg hover:bg-gray-50">
-                  <RadioGroupItem value={option.value} id={option.value} />
-                  <Label htmlFor={option.value} className="text-gray-700 cursor-pointer flex-1">
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
-        );
+      // Update profile
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          first_name: profileData.firstName,
+          last_name: profileData.lastName,
+          date_of_birth: profileData.dateOfBirth,
+          onboarding_completed: true
+        })
+        .eq("id", user.id);
 
-      case 3:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">What are you hoping to achieve?</h2>
-              <p className="text-gray-600">Share your goals - big or small, short-term or long-term.</p>
-            </div>
-            
-            <Textarea
-              value={answers.goals}
-              onChange={(e) => updateAnswer('goals', e.target.value)}
-              placeholder="I want to..."
-              className="min-h-32 text-base resize-none"
-            />
-          </div>
-        );
+      if (profileError) throw profileError;
 
-      case 4:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">How do you like to think about things?</h2>
-              <p className="text-gray-600">This helps us understand your natural approach to planning and reflection.</p>
-            </div>
-            
-            <RadioGroup value={answers.mindset} onValueChange={(value) => updateAnswer('mindset', value)}>
-              {[
-                { value: 'forward', label: 'I prefer focusing on future plans and possibilities' },
-                { value: 'present', label: 'I like to focus on what\'s happening right now' },
-                { value: 'reflective', label: 'I learn best by thinking about past experiences' },
-                { value: 'balanced', label: 'I like to balance all three - past, present, and future' }
-              ].map((option) => (
-                <div key={option.value} className="flex items-center space-x-2 p-4 rounded-lg hover:bg-gray-50">
-                  <RadioGroupItem value={option.value} id={option.value} />
-                  <Label htmlFor={option.value} className="text-gray-700 cursor-pointer flex-1">
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
-        );
+      // Create health goals
+      const goalsToCreate = selectedGoals.map(goalType => {
+        const goalOption = GOAL_OPTIONS.find(g => g.type === goalType);
+        return {
+          user_id: user.id,
+          goal_type: goalType,
+          title: goalOption?.title || goalType,
+          description: goalOption?.description || ""
+        };
+      });
 
-      case 5:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">How would you like to journal?</h2>
-              <p className="text-gray-600">Journaling helps Charlie learn your patterns and provide better insights.</p>
-            </div>
-            
-            <RadioGroup value={answers.journalPreference} onValueChange={(value) => updateAnswer('journalPreference', value)}>
-              {[
-                { value: 'daily-prompts', label: 'Daily prompts - give me specific questions to answer' },
-                { value: 'weekly-checkin', label: 'Weekly check-ins - less frequent but more detailed' },
-                { value: 'freeform', label: 'Free writing - I prefer to write about whatever I want' },
-                { value: 'voice', label: 'Voice journaling - I\'d rather talk than type' }
-              ].map((option) => (
-                <div key={option.value} className="flex items-center space-x-2 p-4 rounded-lg hover:bg-gray-50">
-                  <RadioGroupItem value={option.value} id={option.value} />
-                  <Label htmlFor={option.value} className="text-gray-700 cursor-pointer flex-1">
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
-        );
+      if (goalsToCreate.length > 0) {
+        const { error: goalsError } = await supabase
+          .from("health_goals")
+          .insert(goalsToCreate);
+        
+        if (goalsError) throw goalsError;
+      }
 
-      default:
-        return null;
+      toast({
+        title: "Welcome to KnoMe!",
+        description: "Your profile has been set up successfully."
+      });
+
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Setup Failed",
+        description: error.message
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const isStepComplete = () => {
-    switch (currentStep) {
-      case 1: return answers.groupType !== '';
-      case 2: return answers.stressLevel !== '';
-      case 3: return answers.goals.trim() !== '';
-      case 4: return answers.mindset !== '';
-      case 5: return answers.journalPreference !== '';
-      default: return false;
-    }
-  };
+  const renderWelcomeStep = () => (
+    <div className="text-center space-y-8">
+      <div className="space-y-4">
+        <h1 className="text-4xl font-bold text-primary">Welcome to KnoMe</h1>
+        <p className="text-lg text-muted-foreground">
+          Your personal whole-person wellness companion
+        </p>
+      </div>
+      
+      <div className="space-y-6">
+        <IOSCard className="p-6">
+          <Heart className="w-12 h-12 text-pink-500 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold mb-2">Holistic Wellness</h3>
+          <p className="text-muted-foreground">
+            Track your mental, physical, and emotional well-being in one place
+          </p>
+        </IOSCard>
+        
+        <IOSCard className="p-6">
+          <Target className="w-12 h-12 text-blue-500 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold mb-2">Personal Goals</h3>
+          <p className="text-muted-foreground">
+            Set and achieve meaningful health and wellness goals
+          </p>
+        </IOSCard>
+        
+        <IOSCard className="p-6">
+          <Sparkles className="w-12 h-12 text-purple-500 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold mb-2">AI Insights</h3>
+          <p className="text-muted-foreground">
+            Get personalized recommendations and insights about your health
+          </p>
+        </IOSCard>
+      </div>
+      
+      <IOSButton onClick={handleNext} className="w-full">
+        Get Started
+        <ArrowRight className="w-5 h-5 ml-2" />
+      </IOSButton>
+    </div>
+  );
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Sparkles className="h-6 w-6 text-blue-600 mr-2" />
-            <h1 className="text-2xl font-bold text-gray-800">Let's get to know you</h1>
-          </div>
-          <Progress value={progress} className="w-full max-w-md mx-auto" />
-          <p className="text-sm text-gray-600 mt-2">Step {currentStep} of {totalSteps}</p>
+  const renderProfileStep = () => (
+    <div className="space-y-6">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-bold">Tell us about yourself</h2>
+        <p className="text-muted-foreground">
+          Help us personalize your KnoMe experience
+        </p>
+      </div>
+      
+      <IOSCard className="p-6 space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="firstName">First Name</Label>
+          <Input
+            id="firstName"
+            value={profileData.firstName}
+            onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
+            placeholder="Enter your first name"
+          />
         </div>
-
-        {/* Content */}
-        <Card className="max-w-2xl mx-auto border-0 shadow-lg">
-          <CardContent className="p-8">
-            {renderStep()}
-          </CardContent>
-        </Card>
-
-        {/* Navigation */}
-        <div className="flex justify-between max-w-2xl mx-auto mt-8">
-          <Button
-            variant="outline"
-            onClick={handleBack}
-            disabled={currentStep === 1}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          
-          <Button
-            onClick={handleNext}
-            disabled={!isStepComplete()}
-            className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white flex items-center gap-2"
-          >
-            {currentStep === totalSteps ? 'Complete Setup' : 'Next'}
-            <ArrowRight className="h-4 w-4" />
-          </Button>
+        
+        <div className="space-y-2">
+          <Label htmlFor="lastName">Last Name</Label>
+          <Input
+            id="lastName"
+            value={profileData.lastName}
+            onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
+            placeholder="Enter your last name"
+          />
         </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="dateOfBirth">Date of Birth</Label>
+          <Input
+            id="dateOfBirth"
+            type="date"
+            value={profileData.dateOfBirth}
+            onChange={(e) => setProfileData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+          />
+        </div>
+      </IOSCard>
+      
+      <div className="flex gap-3">
+        <IOSButton variant="outline" onClick={handleBack} className="flex-1">
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back
+        </IOSButton>
+        <IOSButton 
+          onClick={handleNext} 
+          className="flex-1"
+          disabled={!profileData.firstName || !profileData.lastName}
+        >
+          Continue
+          <ArrowRight className="w-5 h-5 ml-2" />
+        </IOSButton>
       </div>
     </div>
   );
-};
 
-export default Onboarding;
+  const renderGoalsStep = () => (
+    <div className="space-y-6">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-bold">Choose your wellness goals</h2>
+        <p className="text-muted-foreground">
+          Select the areas you'd like to focus on (you can change these later)
+        </p>
+      </div>
+      
+      <div className="grid gap-4">
+        {GOAL_OPTIONS.map((goal) => {
+          const Icon = goal.icon;
+          const isSelected = selectedGoals.includes(goal.type);
+          
+          return (
+            <IOSCard
+              key={goal.type}
+              className={`p-4 cursor-pointer transition-all ${
+                isSelected 
+                  ? "ring-2 ring-primary bg-primary/5" 
+                  : "hover:bg-muted/50"
+              }`}
+              onClick={() => toggleGoal(goal.type)}
+            >
+              <div className="flex items-start space-x-4">
+                <div className={`p-3 rounded-full ${goal.color}`}>
+                  <Icon className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1">{goal.title}</h3>
+                  <p className="text-sm text-muted-foreground">{goal.description}</p>
+                </div>
+                {isSelected && (
+                  <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full" />
+                  </div>
+                )}
+              </div>
+            </IOSCard>
+          );
+        })}
+      </div>
+      
+      <div className="flex gap-3">
+        <IOSButton variant="outline" onClick={handleBack} className="flex-1">
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back
+        </IOSButton>
+        <IOSButton 
+          onClick={handleNext}
+          className="flex-1"
+          disabled={selectedGoals.length === 0}
+        >
+          Continue
+          <ArrowRight className="w-5 h-5 ml-2" />
+        </IOSButton>
+      </div>
+    </div>
+  );
+
+  const renderCompleteStep = () => (
+    <div className="text-center space-y-8">
+      <div className="space-y-4">
+        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+          <Sparkles className="w-10 h-10 text-primary" />
+        </div>
+        <h2 className="text-2xl font-bold">You're all set!</h2>
+        <p className="text-muted-foreground">
+          Welcome to your personalized wellness journey, {profileData.firstName}
+        </p>
+      </div>
+      
+      <IOSCard className="p-6 text-left">
+        <h3 className="font-semibold mb-4">Your Setup Summary:</h3>
+        <div className="space-y-2 text-sm">
+          <p><span className="font-medium">Name:</span> {profileData.firstName} {profileData.lastName}</p>
+          <p><span className="font-medium">Goals:</span> {selectedGoals.length} selected</p>
+          {selectedGoals.length > 0 && (
+            <div className="mt-2">
+              <p className="font-medium mb-1">Selected goals:</p>
+              <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                {selectedGoals.map(goalType => {
+                  const goal = GOAL_OPTIONS.find(g => g.type === goalType);
+                  return <li key={goalType}>{goal?.title}</li>;
+                })}
+              </ul>
+            </div>
+          )}
+        </div>
+      </IOSCard>
+      
+      <IOSButton 
+        onClick={handleComplete} 
+        className="w-full"
+        disabled={isLoading}
+      >
+        {isLoading ? "Setting up..." : "Start Your Journey"}
+      </IOSButton>
+    </div>
+  );
+
+  return (
+    <SafeAreaView className="min-h-screen bg-background">
+      <div className="p-6">
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="w-full bg-muted rounded-full h-2 mb-2">
+            <div 
+              className="bg-primary h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="text-sm text-muted-foreground text-center">
+            Step {stepIndex + 1} of {ONBOARDING_STEPS.length}
+          </p>
+        </div>
+
+        {/* Step Content */}
+        <div className="max-w-md mx-auto">
+          {currentStep === "welcome" && renderWelcomeStep()}
+          {currentStep === "profile" && renderProfileStep()}
+          {currentStep === "goals" && renderGoalsStep()}
+          {currentStep === "complete" && renderCompleteStep()}
+        </div>
+      </div>
+    </SafeAreaView>
+  );
+}
