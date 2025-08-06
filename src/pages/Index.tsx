@@ -4,21 +4,56 @@ import { useNavigate } from 'react-router-dom';
 import { SafeAreaView } from '@/components/ios/SafeAreaView';
 import { IOSCard } from '@/components/ios/IOSCard';
 import { IOSButton } from '@/components/ios/IOSButton';
-import { Shield, Heart, Brain, Users, ArrowRight, Sparkles } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Shield, Heart, Brain, Users, ArrowRight, Sparkles, LogIn, UserCircle, LogOut } from 'lucide-react';
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [isAnimated, setIsAnimated] = useState(false);
 
   const handleGetStarted = () => {
     setIsAnimated(true);
-    setTimeout(() => navigate('/onboarding'), 500);
+    if (user) {
+      setTimeout(() => navigate('/dashboard'), 500);
+    } else {
+      setTimeout(() => navigate('/auth'), 500);
+    }
   };
 
   return (
     <SafeAreaView className="min-h-screen bg-gradient-ios">
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
+        {/* Auth Status Bar */}
+        <div className="flex justify-end mb-8">
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <UserCircle className="h-4 w-4" />
+                <span>Welcome back!</span>
+              </div>
+              <IOSButton
+                variant="outline"
+                size="sm"
+                onClick={signOut}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </IOSButton>
+            </div>
+          ) : (
+            <IOSButton
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/auth')}
+            >
+              <LogIn className="h-4 w-4 mr-2" />
+              Sign In
+            </IOSButton>
+          )}
+        </div>
+
         <div className="text-center max-w-4xl mx-auto">
           <div className="flex items-center justify-center mb-6">
             <div className="bg-gradient-primary rounded-full p-3 mr-4">
@@ -50,7 +85,7 @@ const Index = () => {
             onClick={handleGetStarted}
             className={`px-8 py-4 text-lg font-semibold transition-all duration-300 transform ${isAnimated ? 'scale-95' : 'hover:scale-105'} shadow-lg hover:shadow-xl`}
           >
-            Get Started with KnoMe
+            {user ? 'Go to Dashboard' : 'Get Started with KnoMe'}
             <ArrowRight className="ml-2 h-5 w-5" />
           </IOSButton>
         </div>
