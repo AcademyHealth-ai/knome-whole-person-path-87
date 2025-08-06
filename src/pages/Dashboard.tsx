@@ -10,6 +10,7 @@ import IOSCard from '@/components/ios/IOSCard';
 import IOSButton from '@/components/ios/IOSButton';
 import WellnessCheckIn from '@/components/WellnessCheckIn';
 import JournalEntryForm from '@/components/JournalEntryForm';
+import ProgressAnalytics from '@/components/ProgressAnalytics';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useHealthGoals } from '@/hooks/useHealthGoals';
@@ -35,6 +36,7 @@ const Dashboard = () => {
   const { goals, loading: goalsLoading, updateGoalProgress } = useHealthGoals();
   const [showWellnessCheckIn, setShowWellnessCheckIn] = useState(false);
   const [showJournalForm, setShowJournalForm] = useState(false);
+  const [showProgressAnalytics, setShowProgressAnalytics] = useState(false);
 
   const [greeting] = useState(() => {
     const hour = new Date().getHours();
@@ -199,7 +201,12 @@ const Dashboard = () => {
                 <Heart className="h-4 w-4 mb-1" />
                 <span className="text-xs">Wellness</span>
               </IOSButton>
-              <IOSButton variant="outline" size="sm" className="flex-col h-16 justify-center">
+              <IOSButton 
+                variant="outline" 
+                size="sm" 
+                className="flex-col h-16 justify-center"
+                onClick={() => setShowProgressAnalytics(true)}
+              >
                 <TrendingUp className="h-4 w-4 mb-1" />
                 <span className="text-xs">Progress</span>
               </IOSButton>
@@ -286,6 +293,11 @@ const Dashboard = () => {
         {/* Journal Entry Form Modal */}
         {showJournalForm && (
           <JournalEntryForm onClose={() => setShowJournalForm(false)} />
+        )}
+
+        {/* Progress Analytics Modal */}
+        {showProgressAnalytics && (
+          <ProgressAnalytics onClose={() => setShowProgressAnalytics(false)} />
         )}
       </div>
     </SafeAreaView>
