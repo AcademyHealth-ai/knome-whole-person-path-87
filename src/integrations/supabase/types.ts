@@ -115,6 +115,48 @@ export type Database = {
         }
         Relationships: []
       }
+      health_goals: {
+        Row: {
+          created_at: string
+          current_value: number | null
+          description: string | null
+          goal_type: string
+          id: string
+          is_active: boolean | null
+          target_value: number | null
+          title: string
+          unit: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_value?: number | null
+          description?: string | null
+          goal_type: string
+          id?: string
+          is_active?: boolean | null
+          target_value?: number | null
+          title: string
+          unit?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_value?: number | null
+          description?: string | null
+          goal_type?: string
+          id?: string
+          is_active?: boolean | null
+          target_value?: number | null
+          title?: string
+          unit?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       healthcare_providers: {
         Row: {
           created_at: string | null
@@ -151,31 +193,46 @@ export type Database = {
       profiles: {
         Row: {
           additional_info: Json | null
+          avatar_url: string | null
           created_at: string
+          date_of_birth: string | null
+          first_name: string | null
           graduation_year: number | null
           id: string
+          last_name: string | null
           major: string | null
           name: string | null
+          onboarding_completed: boolean | null
           school: string | null
           updated_at: string
         }
         Insert: {
           additional_info?: Json | null
+          avatar_url?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          first_name?: string | null
           graduation_year?: number | null
           id: string
+          last_name?: string | null
           major?: string | null
           name?: string | null
+          onboarding_completed?: boolean | null
           school?: string | null
           updated_at?: string
         }
         Update: {
           additional_info?: Json | null
+          avatar_url?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          first_name?: string | null
           graduation_year?: number | null
           id?: string
+          last_name?: string | null
           major?: string | null
           name?: string | null
+          onboarding_completed?: boolean | null
           school?: string | null
           updated_at?: string
         }
