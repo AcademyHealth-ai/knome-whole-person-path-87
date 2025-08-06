@@ -55,3 +55,5 @@ export const useAuth = () => {
     signOut,
   };
 };
+
+export default useAuth;
