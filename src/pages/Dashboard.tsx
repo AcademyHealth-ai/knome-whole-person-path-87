@@ -9,6 +9,7 @@ import SafeAreaView from '@/components/ios/SafeAreaView';
 import IOSCard from '@/components/ios/IOSCard';
 import IOSButton from '@/components/ios/IOSButton';
 import WellnessCheckIn from '@/components/WellnessCheckIn';
+import JournalEntryForm from '@/components/JournalEntryForm';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useHealthGoals } from '@/hooks/useHealthGoals';
@@ -33,6 +34,7 @@ const Dashboard = () => {
   const { profile, loading: profileLoading } = useProfile();
   const { goals, loading: goalsLoading, updateGoalProgress } = useHealthGoals();
   const [showWellnessCheckIn, setShowWellnessCheckIn] = useState(false);
+  const [showJournalForm, setShowJournalForm] = useState(false);
 
   const [greeting] = useState(() => {
     const hour = new Date().getHours();
@@ -175,7 +177,12 @@ const Dashboard = () => {
           <IOSCard>
             <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 gap-2">
-              <IOSButton variant="outline" size="sm" className="flex-col h-16 justify-center">
+              <IOSButton 
+                variant="outline" 
+                size="sm" 
+                className="flex-col h-16 justify-center"
+                onClick={() => setShowJournalForm(true)}
+              >
                 <Plus className="h-4 w-4 mb-1" />
                 <span className="text-xs">Journal</span>
               </IOSButton>
@@ -274,6 +281,11 @@ const Dashboard = () => {
         {/* Wellness Check-In Modal */}
         {showWellnessCheckIn && (
           <WellnessCheckIn onClose={() => setShowWellnessCheckIn(false)} />
+        )}
+
+        {/* Journal Entry Form Modal */}
+        {showJournalForm && (
+          <JournalEntryForm onClose={() => setShowJournalForm(false)} />
         )}
       </div>
     </SafeAreaView>
