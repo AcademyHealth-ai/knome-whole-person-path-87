@@ -11,6 +11,7 @@ import IOSButton from '@/components/ios/IOSButton';
 import WellnessCheckIn from '@/components/WellnessCheckIn';
 import JournalEntryForm from '@/components/JournalEntryForm';
 import ProgressAnalytics from '@/components/ProgressAnalytics';
+import { AIAssistant } from '@/components/AIAssistant';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useHealthGoals } from '@/hooks/useHealthGoals';
@@ -37,6 +38,7 @@ const Dashboard = () => {
   const [showWellnessCheckIn, setShowWellnessCheckIn] = useState(false);
   const [showJournalForm, setShowJournalForm] = useState(false);
   const [showProgressAnalytics, setShowProgressAnalytics] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
 
   const [greeting] = useState(() => {
     const hour = new Date().getHours();
@@ -142,7 +144,10 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-            <IOSButton className="w-full bg-gradient-to-r from-primary to-accent">
+            <IOSButton 
+              className="w-full bg-gradient-to-r from-primary to-accent"
+              onClick={() => setShowAIAssistant(true)}
+            >
               <MessageCircle className="h-4 w-4 mr-2" />
               Chat with Charlie
             </IOSButton>
@@ -299,6 +304,12 @@ const Dashboard = () => {
         {showProgressAnalytics && (
           <ProgressAnalytics onClose={() => setShowProgressAnalytics(false)} />
         )}
+
+        {/* AI Assistant Modal */}
+        <AIAssistant 
+          open={showAIAssistant} 
+          onOpenChange={setShowAIAssistant} 
+        />
       </div>
     </SafeAreaView>
   );
