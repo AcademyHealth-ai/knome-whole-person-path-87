@@ -45,7 +45,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ open, onOpenChange }) 
         <DialogHeader className="pb-4">
           <DialogTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-primary" />
-            Charlie - Your AI Wellness Assistant
+            Stanley - Your AI Wellness Assistant
           </DialogTitle>
         </DialogHeader>
 
@@ -55,7 +55,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ open, onOpenChange }) 
               {messages.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
                   <Bot className="h-12 w-12 mx-auto mb-4 text-primary" />
-                  <h3 className="font-semibold mb-2">Welcome to Charlie!</h3>
+                  <h3 className="font-semibold mb-2">Welcome to Stanley!</h3>
                   <p className="text-sm mb-4">
                     I'm here to help you with your wellness journey. You can ask me about:
                   </p>
@@ -125,7 +125,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ open, onOpenChange }) 
                         <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                         <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
-                      <span className="text-sm text-muted-foreground">Charlie is thinking...</span>
+                      <span className="text-sm text-muted-foreground">Stanley is thinking...</span>
                     </div>
                   </IOSCard>
                 </div>
@@ -151,7 +151,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ open, onOpenChange }) 
               <Input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Ask Charlie anything about your wellness..."
+                placeholder="Ask Stanley anything about your wellness..."
                 disabled={isLoading}
                 className="flex-1"
               />
