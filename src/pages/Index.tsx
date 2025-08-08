@@ -97,6 +97,13 @@ const Index = () => {
             >
               Ask Stanley
             </IOSButton>
+            <IOSButton
+              variant="ghost"
+              onClick={() => navigate('/partners/turnaround')}
+              className="px-6 py-4 text-lg font-semibold"
+            >
+              Partner Preview
+            </IOSButton>
           </div>
         </div>
 
