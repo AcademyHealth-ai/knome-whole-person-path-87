@@ -76,6 +76,45 @@ export type Database = {
         }
         Relationships: []
       }
+      content_packs: {
+        Row: {
+          attribution: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean
+          license: string | null
+          slug: string
+          source_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attribution?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          license?: string | null
+          slug: string
+          source_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attribution?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          license?: string | null
+          slug?: string
+          source_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       goal_progress_history: {
         Row: {
           created_at: string
@@ -253,6 +292,128 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      lessons: {
+        Row: {
+          body_markdown: string | null
+          created_at: string
+          id: string
+          is_published: boolean
+          media: Json | null
+          order_index: number | null
+          pack_id: string
+          slug: string
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_markdown?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          media?: Json | null
+          order_index?: number | null
+          pack_id: string
+          slug: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_markdown?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          media?: Json | null
+          order_index?: number | null
+          pack_id?: string
+          slug?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_pack_id_fkey"
+            columns: ["pack_id"]
+            isOneToOne: false
+            referencedRelation: "content_packs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_content_map: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          pack_id: string
+          partner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          pack_id: string
+          partner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          pack_id?: string
+          partner_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_content_map_pack_id_fkey"
+            columns: ["pack_id"]
+            isOneToOne: false
+            referencedRelation: "content_packs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_content_map_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partners: {
+        Row: {
+          brand: Json | null
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          brand?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          brand?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          updated_at?: string
         }
         Relationships: []
       }
