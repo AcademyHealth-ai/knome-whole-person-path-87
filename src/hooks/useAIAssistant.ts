@@ -103,8 +103,8 @@ export const useAIAssistant = () => {
 
     try {
       // Prepare conversation history for the API (include the new user message)
-      const conversationHistory = [
-        ...messages.map((m) => ({ role: m.role, content: m.content })),
+      const conversationHistory: { role: 'user' | 'assistant'; content: string }[] = [
+        ...messages.map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
         { role: 'user', content: message },
       ];
 
