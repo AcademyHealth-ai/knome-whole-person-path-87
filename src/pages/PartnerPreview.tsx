@@ -123,16 +123,31 @@ const PartnerPreview: React.FC = () => {
 
   const orgSchema = useMemo(() => {
     if (!partner) return null;
-    return {
+    const schema: any = {
       "@context": "https://schema.org",
       "@type": "Organization",
-      name: partner.name,
+      name: (partner && (partner.slug === 'turnaround')) ? "The Center for Whole-Child Education" : partner.name,
       url: canonical,
     };
+    if ((partner?.slug === 'turnaround')) {
+      schema.sameAs = ["https://turnaroundusa.org/what-we-do/tools/"];
+    }
+    return schema;
   }, [partner, canonical]);
 
-  const pageTitle = partner ? `Partner Preview: ${partner.name}` : "Partner Preview";
-  const pageDesc = activePack ? `${activePack.title} – preview lessons and content.` : "Preview partner content and lessons.";
+  const isTurnaround = (partner?.slug || slug) === 'turnaround';
+  const displayName = isTurnaround
+    ? 'The Center for Whole-Child Education (formerly Turnaround for Children)'
+    : (partner?.name || 'Partner Preview');
+  const toolsUrl = isTurnaround ? 'https://turnaroundusa.org/what-we-do/tools/' : null;
+  const tagline = isTurnaround ? 'Evidence-based tools to support whole-child development in schools' : null;
+
+  const pageTitle = isTurnaround
+    ? 'Turnaround Whole-Child Education Tools | Partner Preview'
+    : (partner ? `Partner Preview: ${partner.name}` : 'Partner Preview');
+  const pageDesc = isTurnaround
+    ? 'Explore evidence-based tools and sample lessons from The Center for Whole-Child Education (Turnaround).'
+    : (activePack ? `${activePack.title} – preview lessons and content.` : 'Preview partner content and lessons.');
 
   const loadLessonsForPack = async (packId: string) => {
     try {
@@ -169,9 +184,23 @@ const PartnerPreview: React.FC = () => {
       </Helmet>
 
       <main className="container mx-auto px-4 py-10">
-        <header className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">{partner?.name || "Partner Preview"}</h1>
-          <IOSButton variant="outline" onClick={() => navigate("/")}>Back Home</IOSButton>
+        <header className="mb-8">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold">{displayName}</h1>
+              {tagline && (
+                <p className="text-muted-foreground mt-1">{tagline}</p>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {toolsUrl && (
+                <IOSButton asChild>
+                  <a href={toolsUrl} target="_blank" rel="noopener noreferrer">Visit Tools</a>
+                </IOSButton>
+              )}
+              <IOSButton variant="outline" onClick={() => navigate("/")}>Back Home</IOSButton>
+            </div>
+          </div>
         </header>
 
         <section className="grid gap-6 lg:grid-cols-3" aria-busy={loading}>
