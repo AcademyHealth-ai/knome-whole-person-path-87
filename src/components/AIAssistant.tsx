@@ -155,7 +155,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ open, onOpenChange }) 
                 disabled={isLoading}
                 className="flex-1"
               />
-              <Button type="submit" disabled={isLoading || !inputMessage.trim()}>
+              <Button type="submit" disabled={isLoading || !inputMessage.trim()} aria-label="Send message to Stanley">
                 <Send className="h-4 w-4" />
               </Button>
             </form>

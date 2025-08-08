@@ -4,12 +4,14 @@ import { SafeAreaView } from '@/components/ios/SafeAreaView';
 import { IOSCard } from '@/components/ios/IOSCard';
 import { IOSButton } from '@/components/ios/IOSButton';
 import { useAuth } from '@/hooks/useAuth';
-import { Shield, Heart, Brain, Users, ArrowRight, Sparkles, LogIn, UserCircle, LogOut } from 'lucide-react';
+import { AIAssistant } from '@/components/AIAssistant';
+import { Shield, Heart, Brain, Users, ArrowRight, Sparkles, LogIn, UserCircle, LogOut, Bot } from 'lucide-react';
 
 const Index = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [isAnimated, setIsAnimated] = useState(false);
+  const [assistantOpen, setAssistantOpen] = useState(false);
 
   const handleGetStarted = () => {
     setIsAnimated(true);
@@ -55,7 +57,7 @@ const Index = () => {
 
         <div className="text-center max-w-4xl mx-auto">
           <div className="flex items-center justify-center mb-6">
-            <div className="bg-gradient-primary rounded-full p-3 mr-4">
+            <div className="bg-gradient-primary rounded-full p-3 mr-4" aria-hidden="true">
               <Brain className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
@@ -80,13 +82,22 @@ const Index = () => {
             <span className="text-sm text-muted-foreground font-medium">AI-Powered</span>
           </div>
 
-          <IOSButton 
-            onClick={handleGetStarted}
-            className={`px-8 py-4 text-lg font-semibold transition-all duration-300 transform ${isAnimated ? 'scale-95' : 'hover:scale-105'} shadow-lg hover:shadow-xl`}
-          >
-            {user ? 'Go to Dashboard' : 'Get Started with KnoMe'}
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </IOSButton>
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <IOSButton 
+              onClick={handleGetStarted}
+              className={`px-8 py-4 text-lg font-semibold transition-all duration-300 transform ${isAnimated ? 'scale-95' : 'hover:scale-105'} shadow-lg hover:shadow-xl`}
+            >
+              {user ? 'Go to Dashboard' : 'Get Started with KnoMe'}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </IOSButton>
+            <IOSButton
+              variant="outline"
+              onClick={() => setAssistantOpen(true)}
+              className="px-6 py-4 text-lg font-semibold"
+            >
+              Ask Stanley
+            </IOSButton>
+          </div>
         </div>
 
         {/* Feature Cards */}
@@ -100,7 +111,7 @@ const Index = () => {
             },
             {
               icon: Brain,
-              title: "AI Assistant Charlie",
+              title: "AI Assistant Stanley",
               description: "Personalized insights and recommendations tailored to your journey",
               color: "bg-purple-500/10 text-purple-600"
             },
@@ -150,7 +161,7 @@ const Index = () => {
               }
             ].map((item, index) => (
               <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-primary/10 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full mx-auto mb-4 flex items-center justify-center" aria-hidden="true">
                   <Shield className="h-8 w-8 text-primary" />
                 </div>
                 <h4 className="font-semibold mb-2">{item.title}</h4>
@@ -159,6 +170,7 @@ const Index = () => {
             ))}
           </div>
         </IOSCard>
+        <AIAssistant open={assistantOpen} onOpenChange={setAssistantOpen} />
       </div>
     </SafeAreaView>
   );
