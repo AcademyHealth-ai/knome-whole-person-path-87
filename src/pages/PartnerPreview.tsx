@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { SafeAreaView } from "@/components/ios/SafeAreaView";
-import { IOSCard } from "@/components/ios/IOSCard";
-import { IOSButton } from "@/components/ios/IOSButton";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 import { useToast } from "@/hooks/use-toast";
+import { PartnerHeader } from "@/components/partners/PartnerHeader";
+import { PackList } from "@/components/partners/PackList";
+import { LessonList } from "@/components/partners/LessonList";
+import { useCanonical } from "@/hooks/useCanonical";
 
 interface PartnerRow {
   id: string;
@@ -32,11 +33,6 @@ interface LessonRow {
   body_markdown: string | null;
   order_index: number | null;
 }
-
-const useCanonical = () => {
-  const { pathname, search } = useLocation();
-  return useMemo(() => `${window.location.origin}${pathname}${search}`, [pathname, search]);
-};
 
 const PartnerPreview: React.FC = () => {
   const { slug = "turnaround" } = useParams();
@@ -184,81 +180,25 @@ const PartnerPreview: React.FC = () => {
       </Helmet>
 
       <main className="container mx-auto px-4 py-10">
-        <header className="mb-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold">{displayName}</h1>
-              {tagline && (
-                <p className="text-muted-foreground mt-1">{tagline}</p>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {toolsUrl && (
-                <IOSButton asChild>
-                  <a href={toolsUrl} target="_blank" rel="noopener noreferrer">Visit Tools</a>
-                </IOSButton>
-              )}
-              <IOSButton variant="outline" onClick={() => navigate("/")}>Back Home</IOSButton>
-            </div>
-          </div>
-        </header>
+        <PartnerHeader
+          displayName={displayName}
+          tagline={tagline}
+          toolsUrl={toolsUrl}
+          onBack={() => navigate("/")}
+        />
 
         <section className="grid gap-6 lg:grid-cols-3" aria-busy={loading}>
-          <div className="lg:col-span-1 space-y-4">
-            <IOSCard>
-              <div className="p-4">
-                <h2 className="text-xl font-semibold mb-2">Content Packs</h2>
-                {packs.length === 0 && !loading && (
-                  <p className="text-muted-foreground">No content available yet.</p>
-                )}
-                <ul className="space-y-2">
-                  {packs.map((p) => (
-                    <li key={p.id}>
-                      <button
-                        onClick={() => loadLessonsForPack(p.id)}
-                        className={`w-full text-left rounded-md px-3 py-2 transition-colors ${
-                          activePackId === p.id ? "bg-accent" : "hover:bg-accent"
-                        }`}
-                        aria-current={activePackId === p.id ? "true" : "false"}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium">{p.title}</span>
-                          {activePackId === p.id && <Badge>Active</Badge>}
-                        </div>
-                        {p.description && (
-                          <p className="text-sm text-muted-foreground mt-1">{p.description}</p>
-                        )}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </IOSCard>
-          </div>
-
-          <div className="lg:col-span-2 space-y-4">
-            <Card className="p-4">
-              <h2 className="text-xl font-semibold mb-3">{activePack?.title || "Lessons"}</h2>
-              {loading ? (
-                <p className="text-muted-foreground">Loading…</p>
-              ) : lessons.length === 0 ? (
-                <p className="text-muted-foreground">No lessons to show.</p>
-              ) : (
-                <ol className="space-y-3 list-decimal pl-6">
-                  {lessons.map((l) => (
-                    <li key={l.id}>
-                      <article>
-                        <h3 className="font-medium">{l.title}</h3>
-                        {l.summary && (
-                          <p className="text-sm text-muted-foreground">{l.summary}</p>
-                        )}
-                      </article>
-                    </li>
-                  ))}
-                </ol>
-              )}
-            </Card>
-          </div>
+          <PackList
+            packs={packs}
+            activePackId={activePackId}
+            loading={loading}
+            onSelect={loadLessonsForPack}
+          />
+          <LessonList
+            title={activePack?.title || "Lessons"}
+            lessons={lessons}
+            loading={loading}
+          />
         </section>
       </main>
     </SafeAreaView>
