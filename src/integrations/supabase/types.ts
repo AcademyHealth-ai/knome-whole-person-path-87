@@ -88,6 +88,7 @@ export type Database = {
           source_url: string | null
           title: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           attribution?: string | null
@@ -100,6 +101,7 @@ export type Database = {
           source_url?: string | null
           title: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           attribution?: string | null
@@ -112,6 +114,7 @@ export type Database = {
           source_url?: string | null
           title?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
