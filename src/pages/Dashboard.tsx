@@ -15,6 +15,8 @@ import { AIAssistant } from '@/components/AIAssistant';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useHealthGoals } from '@/hooks/useHealthGoals';
+import { Helmet } from 'react-helmet-async';
+import { useCanonical } from '@/hooks/useCanonical';
 import { 
   Brain, 
   FileText, 
@@ -49,7 +51,7 @@ const Dashboard = () => {
 
   const userName = profile?.first_name || 'there';
   const isLoading = profileLoading || goalsLoading;
-
+  const canonicalUrl = useCanonical();
   // Calculate overall goal progress
   const overallProgress = useMemo(() => {
     if (goals.length === 0) return 0;
@@ -64,10 +66,10 @@ const Dashboard = () => {
   const activeGoalsCount = goals.filter(goal => goal.is_active).length;
 
   const quickStats = [
-    { label: 'Active Goals', value: activeGoalsCount.toString(), change: `${goals.length} total`, icon: Target, color: 'text-purple-600' },
-    { label: 'Overall Progress', value: `${overallProgress}%`, change: 'This week', icon: TrendingUp, color: 'text-green-600' },
-    { label: 'Profile Setup', value: profile?.onboarding_completed ? '100%' : '50%', change: 'Complete', icon: User, color: 'text-blue-600' },
-    { label: 'Wellness Areas', value: new Set(goals.map(g => g.goal_type)).size.toString(), change: 'Categories', icon: Heart, color: 'text-pink-600' }
+    { label: 'Active Goals', value: activeGoalsCount.toString(), change: `${goals.length} total`, icon: Target, color: 'text-primary' },
+    { label: 'Overall Progress', value: `${overallProgress}%`, change: 'This week', icon: TrendingUp, color: 'text-primary' },
+    { label: 'Profile Setup', value: profile?.onboarding_completed ? '100%' : '50%', change: 'Complete', icon: User, color: 'text-primary' },
+    { label: 'Wellness Areas', value: new Set(goals.map(g => g.goal_type)).size.toString(), change: 'Categories', icon: Heart, color: 'text-primary' }
   ];
 
   const recentInsights = [
@@ -78,6 +80,11 @@ const Dashboard = () => {
 
   return (
     <SafeAreaView className="bg-background">
+      <Helmet>
+        <title>Wellness Dashboard – Knome</title>
+        <meta name="description" content="Track wellness goals, journal insights, and progress analytics." />
+        <link rel="canonical" href={canonicalUrl} />
+      </Helmet>
       <div className="container mx-auto px-4 py-6">
         {/* Welcome Header */}
         <IOSCard className="mb-6 bg-gradient-to-r from-primary/10 to-accent/10">
