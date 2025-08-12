@@ -25,6 +25,17 @@ workflows:
         - $CM_BUILD_DIR/node_modules
         - ios/App/Pods
     scripts:
+      - name: Preflight: verify App Store Connect variables
+        script: |
+          set -e
+          echo "Checking Codemagic environment variables for App Store Connect..."
+          missing=0
+          if [ -z "${APP_STORE_KEY_ID}" ]; then echo "ERROR: APP_STORE_KEY_ID is missing. Attach the 'app_store_connect' env group or set the variable."; missing=1; fi
+          if [ -z "${APP_STORE_ISSUER_ID}" ]; then echo "ERROR: APP_STORE_ISSUER_ID is missing."; missing=1; fi
+          if [ -z "${APP_STORE_P8}" ]; then echo "ERROR: APP_STORE_P8 (p8 private key) is missing."; missing=1; fi
+          if [ "$missing" -eq 1 ]; then echo "One or more required variables are missing. Failing early."; exit 1; fi
+          if ! echo "$APP_STORE_P8" | grep -q "BEGIN PRIVATE KEY"; then echo "ERROR: APP_STORE_P8 does not contain a valid -----BEGIN PRIVATE KEY----- header."; exit 1; fi
+          echo "Preflight OK."
       - name: Install dependencies
         script: |
           npm ci
@@ -39,7 +50,7 @@ workflows:
       - name: Set up automatic code signing
         script: |
           cd $CM_BUILD_DIR
-          app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" --type IOS_APP_STORE --create
+          app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" --issuer-id "$APP_STORE_ISSUER_ID" --key-id "$APP_STORE_KEY_ID" --private-key "$APP_STORE_P8" --type IOS_APP_STORE --create
           keychain add-certificates
           cd ios/App
           xcode-project use-profiles
@@ -66,5 +77,5 @@ workflows:
       app_store_connect:
         key_id: $APP_STORE_KEY_ID
         issuer_id: $APP_STORE_ISSUER_ID
-        private_key: $APP_STORE_P8
+        api_key: $APP_STORE_P8
         submit_to_testflight: true
