@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import PartnerPreview from "./pages/PartnerPreview";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthCallback from "./pages/AuthCallback";
+import ContentPacks from "./pages/ContentPacks";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,11 @@ const App = () => (
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/content-packs" element={
+              <ProtectedRoute>
+                <ContentPacks />
               </ProtectedRoute>
             } />
             <Route path="/partners/:slug" element={<PartnerPreview />} />

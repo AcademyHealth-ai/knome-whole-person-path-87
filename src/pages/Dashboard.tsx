@@ -17,6 +17,7 @@ import { useProfile } from '@/hooks/useProfile';
 import { useHealthGoals } from '@/hooks/useHealthGoals';
 import { Helmet } from 'react-helmet-async';
 import { useCanonical } from '@/hooks/useCanonical';
+import { useNavigate } from 'react-router-dom';
 import { 
   Brain, 
   FileText, 
@@ -34,6 +35,7 @@ import {
 } from 'lucide-react';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
   const { goals, loading: goalsLoading, updateGoalProgress } = useHealthGoals();
@@ -200,9 +202,9 @@ const Dashboard = () => {
                 <Plus className="h-4 w-4 mb-1" />
                 <span className="text-xs">Journal</span>
               </IOSButton>
-              <IOSButton variant="outline" size="sm" className="flex-col h-16 justify-center">
+              <IOSButton variant="outline" size="sm" className="flex-col h-16 justify-center" onClick={() => navigate('/content-packs')}>
                 <FileText className="h-4 w-4 mb-1" />
-                <span className="text-xs">Upload</span>
+                <span className="text-xs">Content Packs</span>
               </IOSButton>
               <IOSButton 
                 variant="outline" 
