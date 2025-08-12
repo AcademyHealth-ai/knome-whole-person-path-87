@@ -12,6 +12,9 @@ import { SafeAreaView } from '@/components/ios/SafeAreaView';
 import { IOSButton } from '@/components/ios/IOSButton';
 import { IOSCard } from '@/components/ios/IOSCard';
 import { Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { useCanonical } from '@/hooks/useCanonical';
+import { Capacitor } from '@capacitor/core';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -146,7 +149,9 @@ const Auth = () => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = Capacitor.isNativePlatform()
+        ? 'knome://auth/callback'
+        : `${window.location.origin}/auth/callback`;
       
       const { data, error } = await supabase.auth.signUp({
         email: signUpEmail,
@@ -171,8 +176,7 @@ const Auth = () => {
 
       if (data.user) {
         setError(null);
-        // Show success message or redirect
-        alert('Account created successfully! Please check your email to confirm your account.');
+        alert('Account created! Please check your email to confirm your account.');
       }
     } catch (error: any) {
       setError('An unexpected error occurred. Please try again.');
@@ -181,8 +185,49 @@ const Auth = () => {
     }
   };
 
+  const handleMagicLink = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      if (!signInEmail) {
+        setError('Please enter your email to receive a magic link');
+        return;
+      }
+      const redirectTo = Capacitor.isNativePlatform()
+        ? 'knome://auth/callback'
+        : `${window.location.origin}/auth/callback`;
+      const { error } = await supabase.auth.signInWithOtp({
+        email: signInEmail,
+        options: { emailRedirectTo: redirectTo },
+      });
+      if (error) throw error;
+      alert('Magic link sent! Check your email.');
+    } catch (e: any) {
+      setError(e?.message || 'Failed to send magic link');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleOAuth = async () => {
+    setError(null);
+    const redirectTo = Capacitor.isNativePlatform()
+      ? 'knome://auth/callback'
+      : `${window.location.origin}/auth/callback`;
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo }
+    });
+    if (error) setError(error.message);
+  };
+
   return (
     <SafeAreaView className="bg-secondary/30">
+      <Helmet>
+        <title>Sign In or Create Account – Knome</title>
+        <meta name="description" content="Secure sign in, sign up, magic link and Google login for Knome." />
+        <link rel="canonical" href={useCanonical()} />
+      </Helmet>
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <IOSCard className="p-6">
@@ -262,6 +307,17 @@ const Auth = () => {
                     )}
                   </IOSButton>
                 </form>
+
+                <div className="my-4 text-center text-muted-foreground">or</div>
+
+                <div className="space-y-3">
+                  <IOSButton onClick={handleMagicLink} className="w-full" variant="secondary" disabled={loading}>
+                    Email me a magic link
+                  </IOSButton>
+                  <IOSButton onClick={handleGoogleOAuth} className="w-full" variant="outline" disabled={loading}>
+                    Continue with Google
+                  </IOSButton>
+                </div>
               </TabsContent>
 
               <TabsContent value="signup">
