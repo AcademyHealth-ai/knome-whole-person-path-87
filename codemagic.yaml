@@ -44,6 +44,7 @@ workflows:
           npm run build
       - name: Prepare iOS platform (Capacitor)
         script: |
+          npx cap add ios --confirm
           npx cap sync ios
           cd ios/App
           pod install
