@@ -69,6 +69,7 @@ workflows:
           xcode-project use-profiles
       - name: Archive (Release)
         script: |
+          cd ios/App
           xcodebuild \
             -workspace App.xcworkspace \
             -scheme "$XCODE_SCHEME" \
