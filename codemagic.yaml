@@ -66,10 +66,7 @@ workflows:
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" --issuer-id "$APP_STORE_ISSUER_ID" --key-id "$APP_STORE_KEY_ID" --private-key "$APP_STORE_P8" --type IOS_APP_STORE --create
           keychain add-certificates
           cd ios/App
-          xcode-project use-profiles
-          # Enable automatic signing in Xcode project
-          sed -i '' 's/CODE_SIGN_STYLE = Manual;/CODE_SIGN_STYLE = Automatic;/g' App.xcodeproj/project.pbxproj
-          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = .*;/PROVISIONING_PROFILE_SPECIFIER = "";/g' App.xcodeproj/project.pbxproj
+          xcode-project use-profiles --code-signing-identity "iPhone Distribution"
       - name: Archive (Release)
         script: |
           cd ios/App
