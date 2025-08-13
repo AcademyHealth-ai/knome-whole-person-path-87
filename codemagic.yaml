@@ -39,17 +39,21 @@ workflows:
       - name: Install dependencies
         script: |
           npm ci
+          # Ensure Capacitor CLI is available
+          npm install -g @capacitor/cli
       - name: Build web assets
         script: |
           npm run build
       - name: Prepare iOS platform (Capacitor)
         script: |
-          # Remove any existing iOS platform first
-          npx cap remove ios || true
+          # Debug: Check Capacitor version
+          npx cap --version || cap --version
+          # Clean any existing platform
+          rm -rf ios || true
           # Add iOS platform
-          npx cap add ios
+          npx cap add ios || cap add ios
           # Sync the project
-          npx cap sync ios
+          npx cap sync ios || cap sync ios
           # Install CocoaPods dependencies
           cd ios/App && pod install
       - name: Set up automatic code signing
