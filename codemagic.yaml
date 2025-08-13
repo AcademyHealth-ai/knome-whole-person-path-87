@@ -60,13 +60,22 @@ workflows:
           # Sync Capacitor and install CocoaPods
           npx cap sync ios
           cd ios/App && pod install
+      - name: Set up App Store Connect API key
+        script: |
+          # Create the API key file with proper format
+          mkdir -p ~/.private_keys
+          echo "$APP_STORE_P8" > ~/.private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+          chmod 600 ~/.private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+          
+          # Set environment variable for the key path
+          echo "APP_STORE_CONNECT_PRIVATE_KEY=~/.private_keys/AuthKey_${APP_STORE_KEY_ID}.p8" >> $CM_ENV
       - name: Set up automatic code signing
         script: |
           cd $CM_BUILD_DIR
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
-            --private-key "$APP_STORE_P8" \
+            --private-key "~/.private_keys/AuthKey_${APP_STORE_KEY_ID}.p8" \
             --type IOS_APP_STORE \
             --create
           keychain add-certificates
