@@ -11,7 +11,7 @@ workflows:
       node: 20.15.0
       # Create these groups in Codemagic UI and add required variables:
       # - app_store_connect: APP_STORE_KEY_ID, APP_STORE_ISSUER_ID, APP_STORE_P8
-      # - ios_signing: DEVELOPMENT_TEAM
+      # - ios_signing: DEVELOPMENT_TEAM, CM_CERTIFICATE, CM_PROVISIONING_PROFILE
       groups:
         - app_store_connect
         - ios_signing
@@ -60,27 +60,26 @@ workflows:
           # Sync Capacitor and install CocoaPods
           npx cap sync ios
           cd ios/App && pod install
-      - name: Set up App Store Connect API key
+      - name: Set up manual code signing
         script: |
-          # Create the API key file with proper format
-          mkdir -p ~/.private_keys
-          echo "$APP_STORE_P8" > ~/.private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
-          chmod 600 ~/.private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+          echo $CM_CERTIFICATE | base64 --decode > /tmp/certificate.p12
+          echo $CM_PROVISIONING_PROFILE | base64 --decode > /tmp/profile.mobileprovision
           
-          # Set environment variable for the key path
-          echo "APP_STORE_CONNECT_PRIVATE_KEY=~/.private_keys/AuthKey_${APP_STORE_KEY_ID}.p8" >> $CM_ENV
-      - name: Set up automatic code signing
-        script: |
-          cd $CM_BUILD_DIR
-          app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
-            --issuer-id "$APP_STORE_ISSUER_ID" \
-            --key-id "$APP_STORE_KEY_ID" \
-            --private-key "~/.private_keys/AuthKey_${APP_STORE_KEY_ID}.p8" \
-            --type IOS_APP_STORE \
-            --create
-          keychain add-certificates
+          # Add certificate to keychain
+          security create-keychain -p "" build.keychain
+          security import /tmp/certificate.p12 -t agg -k ~/Library/Keychains/build.keychain -P "" -A
+          security list-keychains -s ~/Library/Keychains/build.keychain
+          security default-keychain -s ~/Library/Keychains/build.keychain
+          security unlock-keychain -p "" ~/Library/Keychains/build.keychain
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" ~/Library/Keychains/build.keychain
+          
+          # Install provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp /tmp/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+          
           cd ios/App
-          xcode-project use-profiles
+          # Configure manual signing
+          sed -i '' 's/CODE_SIGN_STYLE = Automatic/CODE_SIGN_STYLE = Manual/g' App.xcodeproj/project.pbxproj
       - name: Archive (Release)
         script: |
           cd ios/App
@@ -90,9 +89,11 @@ workflows:
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
-            -allowProvisioningUpdates \
             clean archive \
-            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM"
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="iPhone Distribution" \
+            PROVISIONING_PROFILE=/tmp/profile.mobileprovision
       - name: Export IPA
         script: |
           xcodebuild \
