@@ -60,6 +60,31 @@ workflows:
           # Sync Capacitor and install CocoaPods
           npx cap sync ios
           cd ios/App && pod install
+      - name: Debug environment variables
+        script: |
+          echo "Checking environment variables..."
+          echo "APP_STORE_KEY_ID length: ${#APP_STORE_KEY_ID}"
+          echo "APP_STORE_ISSUER_ID length: ${#APP_STORE_ISSUER_ID}"
+          echo "APP_STORE_P8 length: ${#APP_STORE_P8}"
+          echo "DEVELOPMENT_TEAM length: ${#DEVELOPMENT_TEAM}"
+          echo "BUNDLE_IDENTIFIER: $BUNDLE_IDENTIFIER"
+          
+          if [ -z "$APP_STORE_P8" ]; then
+            echo "ERROR: APP_STORE_P8 is empty"
+            exit 1
+          fi
+          
+          if [ -z "$APP_STORE_KEY_ID" ]; then
+            echo "ERROR: APP_STORE_KEY_ID is empty"
+            exit 1
+          fi
+          
+          if [ -z "$APP_STORE_ISSUER_ID" ]; then
+            echo "ERROR: APP_STORE_ISSUER_ID is empty"
+            exit 1
+          fi
+          
+          echo "Environment variables appear to be set"
       - name: Set up automatic code signing  
         script: |
           cd $CM_BUILD_DIR
