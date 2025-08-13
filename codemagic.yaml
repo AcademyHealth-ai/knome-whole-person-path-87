@@ -44,10 +44,14 @@ workflows:
           npm run build
       - name: Prepare iOS platform (Capacitor)
         script: |
-          npx cap add ios --confirm
+          # Remove any existing iOS platform first
+          npx cap remove ios || true
+          # Add iOS platform
+          npx cap add ios
+          # Sync the project
           npx cap sync ios
-          cd ios/App
-          pod install
+          # Install CocoaPods dependencies
+          cd ios/App && pod install
       - name: Set up automatic code signing
         script: |
           cd $CM_BUILD_DIR
