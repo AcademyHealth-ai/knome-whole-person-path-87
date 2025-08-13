@@ -17,7 +17,7 @@ workflows:
         - ios_signing
       vars:
         XCODE_SCHEME: App
-        BUNDLE_IDENTIFIER: app.lovable.97379e496a1241fea9bafbc36edce731
+        BUNDLE_IDENTIFIER: app.lovable.a97379e496a1241fea9bafbc36edce731
     cache:
       cache_paths:
         - ~/.npm
@@ -75,6 +75,7 @@ workflows:
             -scheme "$XCODE_SCHEME" \
             -configuration Release \
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
+            -allowProvisioningUpdates \
             clean archive \
             DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM"
       - name: Export IPA
