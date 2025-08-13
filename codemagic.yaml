@@ -46,23 +46,15 @@ workflows:
           npm run build
       - name: Setup iOS platform (Capacitor)
         script: |
-          # Debug: Check Capacitor CLI and config
-          echo "Checking Capacitor CLI..."
-          npx cap --version
-          echo "Checking capacitor.config.ts..."
-          cat capacitor.config.ts
-          echo "Current directory contents:"
-          ls -la
-          
           # Remove any existing iOS platform to avoid conflicts
           if [ -d "ios" ]; then
             echo "Removing existing iOS directory..."
             rm -rf ios
           fi
           
-          # Add iOS platform with verbose output
+          # Add iOS platform
           echo "Adding iOS platform..."
-          npx cap add ios --verbose
+          npx cap add ios
       - name: Install iOS dependencies
         script: |
           # Sync Capacitor and install CocoaPods
