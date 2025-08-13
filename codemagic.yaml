@@ -11,7 +11,7 @@ workflows:
       node: 20.15.0
       # Create these groups in Codemagic UI and add required variables:
       # - app_store_connect: APP_STORE_KEY_ID, APP_STORE_ISSUER_ID, APP_STORE_P8
-      # - ios_signing: DEVELOPMENT_TEAM, CM_CERTIFICATE, CM_PROVISIONING_PROFILE
+      # - ios_signing: DEVELOPMENT_TEAM
       groups:
         - app_store_connect
         - ios_signing
@@ -60,26 +60,20 @@ workflows:
           # Sync Capacitor and install CocoaPods
           npx cap sync ios
           cd ios/App && pod install
-      - name: Set up manual code signing
+      - name: Set up automatic code signing  
         script: |
-          echo $CM_CERTIFICATE | base64 --decode > /tmp/certificate.p12
-          echo $CM_PROVISIONING_PROFILE | base64 --decode > /tmp/profile.mobileprovision
-          
-          # Add certificate to keychain
-          security create-keychain -p "" build.keychain
-          security import /tmp/certificate.p12 -t agg -k ~/Library/Keychains/build.keychain -P "" -A
-          security list-keychains -s ~/Library/Keychains/build.keychain
-          security default-keychain -s ~/Library/Keychains/build.keychain
-          security unlock-keychain -p "" ~/Library/Keychains/build.keychain
-          security set-key-partition-list -S apple-tool:,apple: -s -k "" ~/Library/Keychains/build.keychain
-          
-          # Install provisioning profile
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp /tmp/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-          
+          cd $CM_BUILD_DIR
+          app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
+            --issuer-id "$APP_STORE_ISSUER_ID" \
+            --key-id "$APP_STORE_KEY_ID" \
+            --private-key "$APP_STORE_P8" \
+            --type IOS_APP_STORE \
+            --create
+          keychain add-certificates
           cd ios/App
-          # Configure manual signing
-          sed -i '' 's/CODE_SIGN_STYLE = Automatic/CODE_SIGN_STYLE = Manual/g' App.xcodeproj/project.pbxproj
+          xcode-project use-profiles
+          # Ensure automatic signing is enabled
+          sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj
       - name: Archive (Release)
         script: |
           cd ios/App
@@ -89,11 +83,9 @@ workflows:
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
+            -allowProvisioningUpdates \
             clean archive \
-            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="iPhone Distribution" \
-            PROVISIONING_PROFILE=/tmp/profile.mobileprovision
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM"
       - name: Export IPA
         script: |
           xcodebuild \
