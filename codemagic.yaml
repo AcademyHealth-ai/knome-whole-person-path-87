@@ -14,6 +14,9 @@ workflows:
       vars:
         XCODE_SCHEME: App
         BUNDLE_IDENTIFIER: app.lovable.a97379e496a1241fea9bafbc36edce731
+        # ⚠️ IMPORTANT: Add this to vars or your ios_signing group
+        # Replace ABC123XYZ9 with your real Apple Developer Team ID
+        DEVELOPMENT_TEAM: 6547583QJL
     cache:
       cache_paths:
         - ~/.npm
@@ -26,12 +29,12 @@ workflows:
           set -e
           echo "Checking Codemagic environment variables for App Store Connect..."
           missing=0
-          if [ -z "${APP_STORE_KEY_ID}" ]; then echo "ERROR: APP_STORE_KEY_ID is missing. Attach the 'app_store_connect' env group or set the variable."; missing=1; fi
+          if [ -z "${APP_STORE_KEY_ID}" ]; then echo "ERROR: APP_STORE_KEY_ID is missing."; missing=1; fi
           if [ -z "${APP_STORE_ISSUER_ID}" ]; then echo "ERROR: APP_STORE_ISSUER_ID is missing."; missing=1; fi
-          if [ -z "${APP_STORE_P8}" ]; then echo "ERROR: APP_STORE_P8 (p8 private key) is missing."; missing=1; fi
+          if [ -z "${APP_STORE_P8}" ]; then echo "ERROR: APP_STORE_P8 is missing."; missing=1; fi
           if [ "$missing" -eq 1 ]; then echo "One or more required variables are missing. Failing early."; exit 1; fi
-          if ! echo "$APP_STORE_P8" | grep -q "BEGIN PRIVATE KEY"; then echo "ERROR: APP_STORE_P8 does not contain a valid -----BEGIN PRIVATE KEY----- header."; exit 1; fi
-          echo "Preflight OK."
+          if ! echo "$APP_STORE_P8" | grep -q "BEGIN PRIVATE KEY"; then echo "ERROR: APP_STORE_P8 does not contain a valid BEGIN PRIVATE KEY."; exit 1; fi
+          echo "✅ Preflight OK."
       - name: Install dependencies
         script: |
           npm ci
@@ -53,51 +56,39 @@ workflows:
           cd ios/App && pod install
       - name: Debug environment variables
         script: |
-          echo "Checking environment variables..."
+          echo "Environment variables:"
           echo "APP_STORE_KEY_ID length: ${#APP_STORE_KEY_ID}"
           echo "APP_STORE_ISSUER_ID length: ${#APP_STORE_ISSUER_ID}"
           echo "APP_STORE_P8 length: ${#APP_STORE_P8}"
-          echo "DEVELOPMENT_TEAM length: ${#DEVELOPMENT_TEAM}"
+          echo "DEVELOPMENT_TEAM: $DEVELOPMENT_TEAM"
           echo "BUNDLE_IDENTIFIER: $BUNDLE_IDENTIFIER"
-          
-          if [ -z "$APP_STORE_P8" ]; then
-            echo "ERROR: APP_STORE_P8 is empty"
-            exit 1
-          fi
-          
-          if [ -z "$APP_STORE_KEY_ID" ]; then
-            echo "ERROR: APP_STORE_KEY_ID is empty"
-            exit 1
-          fi
-          
-          if [ -z "$APP_STORE_ISSUER_ID" ]; then
-            echo "ERROR: APP_STORE_ISSUER_ID is empty"
-            exit 1
-          fi
-          
-          echo "Environment variables appear to be set"
+      - name: 🔍 Show first line of .p8 key
+        script: |
+          echo "First line of APP_STORE_P8:"
+          echo "$APP_STORE_P8" | head -n 1
       - name: Set up automatic code signing  
         script: |
           cd $CM_BUILD_DIR
+          echo "🔑 Fetching signing files..."
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
             --private-key "$APP_STORE_P8" \
             --type IOS_APP_STORE \
             --create
+          echo "🔐 Adding certificates to keychain..."
           keychain add-certificates
           cd ios/App
+          echo "🔧 Applying provisioning profiles to project..."
           xcode-project use-profiles
 
-          # 🔍 Check actual signing config
-          echo "Checking code signing settings..."
+          echo "🔎 Debug: Code signing settings..."
           xcodebuild -showBuildSettings -scheme "$XCODE_SCHEME" | grep -i signing
 
-          # Ensure automatic signing is enabled
+          echo "📐 Forcing CODE_SIGN_STYLE to Automatic..."
           sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj
       - name: 🔍 List shared Xcode schemes
         script: |
-          echo "Listing shared Xcode schemes..."
           cd ios/App
           xcodebuild -list
       - name: Archive (Release)
