@@ -57,18 +57,32 @@ workflows:
           echo "$APP_STORE_P8" | head -n 1
       - name: Set up automatic code signing  
         script: |
+          set -e
           cd $CM_BUILD_DIR
-          app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
+          echo "🔍 Attempting to fetch signing files..."
+          echo "Bundle ID: $BUNDLE_IDENTIFIER"
+          echo "Team ID: $DEVELOPMENT_TEAM"
+          
+          if app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
             --private-key "$APP_STORE_P8" \
             --type IOS_APP_STORE \
             --platform IOS \
             --create \
-            --verbose
+            --verbose; then
+            echo "✅ Signing files fetched successfully"
+          else
+            echo "❌ Failed to fetch signing files, exit code: $?"
+            echo "Attempting manual certificate setup..."
+          fi
+          
           keychain add-certificates
           cd ios/App
           xcode-project use-profiles
+          
+          echo "🔍 Checking available profiles:"
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "No profiles directory found"
       - name: 🔍 List shared Xcode schemes
         script: |
           cd ios/App
