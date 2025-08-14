@@ -14,7 +14,7 @@ workflows:
       vars:
         XCODE_SCHEME: App
         BUNDLE_IDENTIFIER: app.lovable.a97379e496a1241fea9bafbc36edce731
-        DEVELOPMENT_TEAM: 6547583QJL   # ← Replace with your real Team ID
+        DEVELOPMENT_TEAM: YOUR_ACTUAL_TEAM_ID   # ← Replace with your real 10-character Apple Developer Team ID
     cache:
       cache_paths:
         - ~/.npm
