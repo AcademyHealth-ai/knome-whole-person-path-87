@@ -1,5 +1,4 @@
 # Codemagic CI configuration for cloud iOS builds (Capacitor)
-# Docs: https://docs.codemagic.io/yaml-basic-configuration/yaml-builds/
 
 workflows:
   ios_testflight:
@@ -9,9 +8,6 @@ workflows:
       xcode: 15.4
       cocoapods: default
       node: 20.15.0
-      # Create these groups in Codemagic UI and add required variables:
-      # - app_store_connect: APP_STORE_KEY_ID, APP_STORE_ISSUER_ID, APP_STORE_P8
-      # - ios_signing: DEVELOPMENT_TEAM
       groups:
         - app_store_connect
         - ios_signing
@@ -39,25 +35,20 @@ workflows:
       - name: Install dependencies
         script: |
           npm ci
-          # Ensure Capacitor CLI is available
           npm install -g @capacitor/cli
       - name: Build web assets
         script: |
           npm run build
       - name: Setup iOS platform (Capacitor)
         script: |
-          # Remove any existing iOS platform to avoid conflicts
           if [ -d "ios" ]; then
             echo "Removing existing iOS directory..."
             rm -rf ios
           fi
-          
-          # Add iOS platform
           echo "Adding iOS platform..."
           npx cap add ios
       - name: Install iOS dependencies
         script: |
-          # Sync Capacitor and install CocoaPods
           npx cap sync ios
           cd ios/App && pod install
       - name: Debug environment variables
@@ -97,8 +88,12 @@ workflows:
           keychain add-certificates
           cd ios/App
           xcode-project use-profiles
-          # Ensure automatic signing is enabled
           sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj
+      - name: 🔍 List shared Xcode schemes
+        script: |
+          echo "Listing shared Xcode schemes..."
+          cd ios/App
+          xcodebuild -list
       - name: Archive (Release)
         script: |
           cd ios/App
