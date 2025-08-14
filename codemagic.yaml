@@ -14,9 +14,8 @@ workflows:
       vars:
         XCODE_SCHEME: App
         BUNDLE_IDENTIFIER: app.lovable.a97379e496a1241fea9bafbc36edce731
-        # ⚠️ IMPORTANT: Add this to vars or your ios_signing group
-        # Replace ABC123XYZ9 with your real Apple Developer Team ID
-        DEVELOPMENT_TEAM: 6547583QJL
+        # ✅ Replace with your actual Apple Developer Team ID
+        DEVELOPMENT_TEAM: ZXY123ABCD
     cache:
       cache_paths:
         - ~/.npm
@@ -91,6 +90,10 @@ workflows:
         script: |
           cd ios/App
           xcodebuild -list
+      - name: 🔍 Show signing settings for Archive
+        script: |
+          cd ios/App
+          xcodebuild -showBuildSettings -workspace App.xcworkspace -scheme "$XCODE_SCHEME" -configuration Release | grep -i signing
       - name: Archive (Release)
         script: |
           cd ios/App
@@ -101,8 +104,14 @@ workflows:
             -destination "generic/platform=iOS" \
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
             -allowProvisioningUpdates \
+            -allowProvisioningDeviceRegistration \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
             clean archive \
-            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM"
+            CODE_SIGN_STYLE=Automatic \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            PROVISIONING_PROFILE_SPECIFIER=""
       - name: Export IPA
         script: |
           xcodebuild \
