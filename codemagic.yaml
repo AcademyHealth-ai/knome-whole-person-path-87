@@ -79,4 +79,52 @@ workflows:
       - name: Set up automatic code signing  
         script: |
           cd $CM_BUILD_DIR
-          app-store-connec
+          app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
+            --issuer-id "$APP_STORE_ISSUER_ID" \
+            --key-id "$APP_STORE_KEY_ID" \
+            --private-key "$APP_STORE_P8" \
+            --type IOS_APP_STORE \
+            --create
+          keychain add-certificates
+          cd ios/App
+          xcode-project use-profiles
+
+          # 🔍 Check actual signing config
+          echo "Checking code signing settings..."
+          xcodebuild -showBuildSettings -scheme "$XCODE_SCHEME" | grep -i signing
+
+          # Ensure automatic signing is enabled
+          sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj
+      - name: 🔍 List shared Xcode schemes
+        script: |
+          echo "Listing shared Xcode schemes..."
+          cd ios/App
+          xcodebuild -list
+      - name: Archive (Release)
+        script: |
+          cd ios/App
+          xcodebuild \
+            -workspace App.xcworkspace \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
+            -allowProvisioningUpdates \
+            clean archive \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM"
+      - name: Export IPA
+        script: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
+            -exportOptionsPlist "$CM_EXPORT_OPTIONS" \
+            -exportPath "$CM_BUILD_DIR/build/ipa"
+    artifacts:
+      - build/ipa/*.ipa
+      - build/App.xcarchive
+    publishing:
+      app_store_connect:
+        key_id: $APP_STORE_KEY_ID
+        issuer_id: $APP_STORE_ISSUER_ID
+        api_key: $APP_STORE_P8
+        submit_to_testflight: true
