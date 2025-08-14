@@ -14,8 +14,7 @@ workflows:
       vars:
         XCODE_SCHEME: App
         BUNDLE_IDENTIFIER: app.lovable.a97379e496a1241fea9bafbc36edce731
-        # ✅ Replace with your actual Apple Developer Team ID
-        DEVELOPMENT_TEAM: 6547583QJL
+        DEVELOPMENT_TEAM: 6547583QJL   # ← Replace with your real Team ID
     cache:
       cache_paths:
         - ~/.npm
@@ -64,7 +63,9 @@ workflows:
             --key-id "$APP_STORE_KEY_ID" \
             --private-key "$APP_STORE_P8" \
             --type IOS_APP_STORE \
-            --create
+            --platform IOS \
+            --create \
+            --verbose
           keychain add-certificates
           cd ios/App
           xcode-project use-profiles
