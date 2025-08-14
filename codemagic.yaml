@@ -88,7 +88,14 @@ workflows:
           keychain add-certificates
           cd ios/App
           xcode-project use-profiles
+
+          # 🔍 Check actual signing config
+          echo "Checking code signing settings..."
+          xcodebuild -showBuildSettings -scheme "$XCODE_SCHEME" | grep -i signing
+
+          # Ensure automatic signing is enabled
           sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj
+
       - name: 🔍 List shared Xcode schemes
         script: |
           echo "Listing shared Xcode schemes..."
