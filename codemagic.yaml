@@ -109,7 +109,6 @@ workflows:
             -skipMacroValidation \
             clean archive \
             CODE_SIGN_STYLE=Automatic \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
             DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
             PROVISIONING_PROFILE_SPECIFIER=""
       - name: Export IPA
