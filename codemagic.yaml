@@ -63,11 +63,14 @@ workflows:
           # Initialize keychain
           keychain initialize
           
+          # Create private key file
+          echo "$APP_STORE_P8" > ~/private_key.p8
+          
           # Fetch signing files using App Store Connect API
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
-            --private-key "$APP_STORE_P8" \
+            --private-key @file:~/private_key.p8 \
             --type IOS_APP_STORE \
             --create
           
