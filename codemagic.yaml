@@ -102,7 +102,17 @@ workflows:
           set -e
           cd ios/App
           
-          echo "🔍 Building with manual signing and verbose output..."
+          # Get the provisioning profile UUID
+          PROVISIONING_PROFILE=$(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec grep -l "$BUNDLE_IDENTIFIER" {} \; | head -n 1)
+          if [ -n "$PROVISIONING_PROFILE" ]; then
+            PROFILE_UUID=$(grep -aA1 UUID "$PROVISIONING_PROFILE" | grep string | sed 's/<string>//g' | sed 's/<\/string>//g' | tr -d '\t')
+            echo "🔍 Found provisioning profile UUID: $PROFILE_UUID"
+          else
+            echo "❌ No provisioning profile found for $BUNDLE_IDENTIFIER"
+            exit 1
+          fi
+          
+          echo "🔍 Building with manual signing and explicit provisioning profile..."
           xcodebuild \
             -workspace App.xcworkspace \
             -scheme "$XCODE_SCHEME" \
@@ -111,6 +121,7 @@ workflows:
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
             -verbose \
             -allowProvisioningUpdates \
             clean archive
