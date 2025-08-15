@@ -102,7 +102,7 @@ workflows:
           set -e
           cd ios/App
           
-          echo "🔍 Building with manual signing..."
+          echo "🔍 Building with manual signing and verbose output..."
           xcodebuild \
             -workspace App.xcworkspace \
             -scheme "$XCODE_SCHEME" \
@@ -111,6 +111,8 @@ workflows:
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            -verbose \
+            -allowProvisioningUpdates \
             clean archive
       - name: 💾 Create export options manually
         script: |
