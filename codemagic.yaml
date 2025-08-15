@@ -60,22 +60,8 @@ workflows:
           set -e
           cd $CM_BUILD_DIR
           
-          echo "🔍 Fetching signing files..."
-          app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
-            --issuer-id "$APP_STORE_ISSUER_ID" \
-            --key-id "$APP_STORE_KEY_ID" \
-            --private-key "$APP_STORE_P8" \
-            --type IOS_APP_STORE \
-            --platform IOS \
-            --create \
-            --verbose
-          
-          echo "🔍 Adding certificates to keychain..."
-          keychain add-certificates
-          
-          echo "🔍 Setting up Xcode project with profiles..."
-          cd ios/App
-          xcode-project use-profiles
+          echo "🔍 Setting up automatic signing without manual certificate fetch..."
+          # Skip manual certificate fetching, let Xcode handle it automatically
           
       - name: Configure automatic signing
         script: |
