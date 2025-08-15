@@ -99,7 +99,10 @@ workflows:
           xcodebuild -showBuildSettings -workspace App.xcworkspace -scheme "$XCODE_SCHEME" -configuration Release | grep -i signing
       - name: Archive (Release)
         script: |
+          set -e
           cd ios/App
+          
+          echo "🔍 Building with automatic signing..."
           xcodebuild \
             -workspace App.xcworkspace \
             -scheme "$XCODE_SCHEME" \
@@ -108,9 +111,8 @@ workflows:
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
             -allowProvisioningUpdates \
             -allowProvisioningDeviceRegistration \
-            -skipPackagePluginValidation \
-            -skipMacroValidation \
-            -xcconfig "$CM_BUILD_DIR/ios/App/signing.xcconfig" \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
             clean archive
       - name: 💾 Create export options manually
         script: |
