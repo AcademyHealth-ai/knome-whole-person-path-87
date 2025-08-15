@@ -102,29 +102,61 @@ workflows:
           set -e
           cd ios/App
           
-          # Get the provisioning profile UUID
-          PROVISIONING_PROFILE=$(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec grep -l "$BUNDLE_IDENTIFIER" {} \; | head -n 1)
-          if [ -n "$PROVISIONING_PROFILE" ]; then
-            PROFILE_UUID=$(grep -aA1 UUID "$PROVISIONING_PROFILE" | grep string | sed 's/<string>//g' | sed 's/<\/string>//g' | tr -d '\t')
-            echo "🔍 Found provisioning profile UUID: $PROFILE_UUID"
-          else
-            echo "❌ No provisioning profile found for $BUNDLE_IDENTIFIER"
-            exit 1
-          fi
+          echo "🔍 Searching for provisioning profiles..."
           
-          echo "🔍 Building with manual signing and explicit provisioning profile..."
-          xcodebuild \
-            -workspace App.xcworkspace \
-            -scheme "$XCODE_SCHEME" \
-            -configuration Release \
-            -destination "generic/platform=iOS" \
-            -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
-            CODE_SIGN_STYLE=Manual \
-            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
-            -verbose \
-            -allowProvisioningUpdates \
-            clean archive
+          # Check multiple possible locations for provisioning profiles
+          PROFILE_LOCATIONS=(
+            "$HOME/Library/MobileDevice/Provisioning Profiles"
+            "$CM_BUILD_DIR/profiles"
+            "$CM_BUILD_DIR"
+            "/tmp/profiles"
+          )
+          
+          PROVISIONING_PROFILE=""
+          for location in "${PROFILE_LOCATIONS[@]}"; do
+            if [ -d "$location" ]; then
+              echo "🔍 Checking location: $location"
+              ls -la "$location" || true
+              FOUND_PROFILE=$(find "$location" -name "*.mobileprovision" -exec grep -l "$BUNDLE_IDENTIFIER" {} \; 2>/dev/null | head -n 1)
+              if [ -n "$FOUND_PROFILE" ]; then
+                PROVISIONING_PROFILE="$FOUND_PROFILE"
+                echo "🔍 Found provisioning profile at: $PROVISIONING_PROFILE"
+                break
+              fi
+            fi
+          done
+          
+          # If no specific profile found, try automatic provisioning
+          if [ -n "$PROVISIONING_PROFILE" ]; then
+            PROFILE_UUID=$(grep -aA1 UUID "$PROVISIONING_PROFILE" | grep string | sed 's/<string>//g' | sed 's/<\/string>//g' | tr -d '\t' | head -n 1)
+            echo "🔍 Using provisioning profile UUID: $PROFILE_UUID"
+            
+            xcodebuild \
+              -workspace App.xcworkspace \
+              -scheme "$XCODE_SCHEME" \
+              -configuration Release \
+              -destination "generic/platform=iOS" \
+              -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
+              CODE_SIGN_STYLE=Manual \
+              DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+              PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
+              -verbose \
+              -allowProvisioningUpdates \
+              clean archive
+          else
+            echo "🔍 No specific provisioning profile found, trying with automatic provisioning updates..."
+            xcodebuild \
+              -workspace App.xcworkspace \
+              -scheme "$XCODE_SCHEME" \
+              -configuration Release \
+              -destination "generic/platform=iOS" \
+              -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
+              CODE_SIGN_STYLE=Automatic \
+              DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+              -verbose \
+              -allowProvisioningUpdates \
+              clean archive
+          fi
       - name: 💾 Create export options manually
         script: |
           cat > ios/App/exportOptions.plist <<EOF
