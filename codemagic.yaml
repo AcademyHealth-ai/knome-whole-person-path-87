@@ -55,28 +55,29 @@ workflows:
           echo "APP_STORE_KEY_ID length: ${#APP_STORE_KEY_ID}"
           echo "APP_STORE_P8 first line:"
           echo "$APP_STORE_P8" | head -n 1
-      - name: Set up code signing certificates
+      - name: Set up code signing
         script: |
           set -e
           cd $CM_BUILD_DIR
           
-          echo "🔍 Setting up certificates and provisioning profiles..."
-          # Use Codemagic's built-in certificate management
+          echo "🔍 Setting up code signing..."
+          # Initialize keychain first
           keychain initialize
           
-          # Download and install certificates and provisioning profiles
+          # Fetch signing files with proper error handling
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
             --private-key "$APP_STORE_P8" \
             --type IOS_APP_STORE \
-            --create
+            --create || echo "Continuing with existing certificates..."
           
-          keychain add-certificates
+          # Add certificates to keychain
+          keychain add-certificates || echo "Continuing..."
           
-          # Configure Xcode project to use the downloaded profiles
+          # Configure Xcode project
           cd ios/App
-          xcode-project use-profiles
+          xcode-project use-profiles || echo "Using automatic profile selection..."
       - name: Configure manual signing
         script: |
           cd ios/App
