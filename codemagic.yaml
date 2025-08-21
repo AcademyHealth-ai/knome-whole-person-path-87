@@ -13,8 +13,8 @@ workflows:
         - ios_signing
       vars:
         XCODE_SCHEME: App
-        BUNDLE_IDENTIFIER: app.lovable.a97379e496a1241fea9bafbc36edce731
-        DEVELOPMENT_TEAM: 6547583QJL
+        BUNDLE_IDENTIFIER: com.yourcompany.yourapp  # REPLACE WITH YOUR ACTUAL BUNDLE ID
+        DEVELOPMENT_TEAM: YOUR_TEAM_ID  # REPLACE WITH YOUR ACTUAL TEAM ID
     cache:
       cache_paths:
         - ~/.npm
@@ -104,6 +104,20 @@ workflows:
             clean archive
       - name: Export IPA
         script: |
+          # Create export options plist
+          cat > ~/export_options.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>$DEVELOPMENT_TEAM</string>
+          </dict>
+          </plist>
+          EOF
+          
           xcodebuild \
             -exportArchive \
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
