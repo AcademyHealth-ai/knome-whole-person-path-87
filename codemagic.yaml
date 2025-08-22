@@ -14,7 +14,7 @@ workflows:
       vars:
         XCODE_SCHEME: App
         BUNDLE_IDENTIFIER: com.academyhealth.knoMe  # Get this from Apple Developer Console
-        DEVELOPMENT_TEAM: YRPNPX8UP2  # Your Apple Developer Team ID
+        DEVELOPMENT_TEAM: 6547583QJL  # Your Apple Developer Team ID
     cache:
       cache_paths:
         - ~/.npm
