@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.a97379e496a1241fea9bafbc36edce731',
+  appId: 'YOUR_ACTUAL_BUNDLE_ID_HERE',  // Must match Apple Developer Console
   appName: 'knome-whole-person-path',
   webDir: 'dist',
   ios: {
