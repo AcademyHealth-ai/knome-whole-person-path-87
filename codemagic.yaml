@@ -13,7 +13,7 @@ workflows:
         - ios_signing
       vars:
         XCODE_SCHEME: App
-        BUNDLE_IDENTIFIER: YOUR_ACTUAL_BUNDLE_ID_HERE  # Get this from Apple Developer Console
+        BUNDLE_IDENTIFIER: com.academyhealth.knoMe  # Get this from Apple Developer Console
         DEVELOPMENT_TEAM: YOUR_TEAM_ID  # REPLACE WITH YOUR ACTUAL TEAM ID
     cache:
       cache_paths:
