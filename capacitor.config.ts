@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'YOUR_ACTUAL_BUNDLE_ID_HERE',  // Must match Apple Developer Console
+  appId: 'com.academyhealth.knoMe',  // Must match Apple Developer Console
   appName: 'knome-whole-person-path',
   webDir: 'dist',
   ios: {
