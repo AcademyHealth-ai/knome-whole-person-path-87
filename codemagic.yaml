@@ -10,10 +10,11 @@ workflows:
       node: 20.15.0
       groups:
         - app_store_connect
+        - ios_signing
       vars:
         XCODE_SCHEME: App
-        BUNDLE_IDENTIFIER: com.academyhealth.knoMe  # Get this from Apple Developer Console
-        DEVELOPMENT_TEAM: 6547583QJL  # Your Apple Developer Team ID
+        BUNDLE_IDENTIFIER: com.academyhealth.knoMe
+        DEVELOPMENT_TEAM: 6547583QJL
     cache:
       cache_paths:
         - ~/.npm
@@ -56,41 +57,9 @@ workflows:
           echo "$APP_STORE_P8" | head -n 1
       - name: Set up code signing
         script: |
-          set -e
-          echo "🔍 Fetching existing certificates and provisioning profiles..."
-          
-          # Create App Store Connect API key file
-          echo "$APP_STORE_P8" | base64 -d > ~/private_key.p8
-          
-          # Initialize keychain
-          keychain initialize
-          
-          # Try to fetch existing certificates first
-          app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
-            --issuer-id "$APP_STORE_ISSUER_ID" \
-            --key-id "$APP_STORE_KEY_ID" \
-            --private-key "$(cat ~/private_key.p8)" \
-            --type IOS_APP_STORE || echo "No existing certificates found, will create new ones..."
-          
-          # If no certificates exist, create them
-          if [ $? -ne 0 ]; then
-            echo "Creating new certificates and profiles..."
-            app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
-              --issuer-id "$APP_STORE_ISSUER_ID" \
-              --key-id "$APP_STORE_KEY_ID" \
-              --private-key "$(cat ~/private_key.p8)" \
-              --type IOS_APP_STORE \
-              --create
-          fi
-          
-          # Add certificates to keychain
-          keychain add-certificates
-          
-          # Configure Xcode project
-          cd ios/App
-          xcode-project use-profiles
-          
-          echo "✅ Code signing setup complete"
+          # Certificates and provisioning profiles are automatically managed
+          # by Codemagic when using the ios_signing environment group
+          echo "✅ Code signing handled automatically by Codemagic"
       - name: Archive (Release)
         script: |
           set -e
