@@ -73,6 +73,8 @@ workflows:
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_STYLE=Manual \
             clean archive
       - name: Export IPA
         script: |
