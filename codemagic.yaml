@@ -66,12 +66,13 @@ workflows:
           # Create private key file (decode base64)
           echo "$APP_STORE_P8" | base64 -d > ~/private_key.p8
           
-          # Fetch existing signing files from App Store Connect
+          # Let Codemagic create and manage certificates automatically
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
             --private-key "$(cat ~/private_key.p8)" \
-            --type IOS_APP_STORE
+            --type IOS_APP_STORE \
+            --create
           
           # Add certificates to keychain
           keychain add-certificates
