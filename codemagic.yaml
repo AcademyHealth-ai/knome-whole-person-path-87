@@ -60,22 +60,13 @@ workflows:
           set -e
           echo "🔍 Setting up code signing with App Store Connect API..."
           
-          # Debug private key format
-          echo "🔍 Private key format check:"
-          echo "Key length: ${#APP_STORE_P8}"
-          echo "First line: $(echo "$APP_STORE_P8" | head -n 1)"
-          echo "Last line: $(echo "$APP_STORE_P8" | tail -n 1)"
-          echo "Contains BEGIN: $(echo "$APP_STORE_P8" | grep -c "BEGIN PRIVATE KEY" || echo "0")"
-          echo "Contains END: $(echo "$APP_STORE_P8" | grep -c "END PRIVATE KEY" || echo "0")"
-          
           # Initialize keychain
           keychain initialize
           
-          # Create private key file and verify it (decode base64)
+          # Create private key file (decode base64)
           echo "$APP_STORE_P8" | base64 -d > ~/private_key.p8
-          echo "🔍 Created key file size: $(wc -c < ~/private_key.p8)"
           
-          # Fetch signing files using App Store Connect API
+          # Fetch existing signing files from App Store Connect
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
