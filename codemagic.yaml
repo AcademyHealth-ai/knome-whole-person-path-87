@@ -10,11 +10,13 @@ workflows:
       node: 20.15.0
       groups:
         - app_store_connect
-        - ios_signing
       vars:
         XCODE_SCHEME: App
         BUNDLE_IDENTIFIER: com.academyhealth.knoMe  # Get this from Apple Developer Console
         DEVELOPMENT_TEAM: 6547583QJL  # Your Apple Developer Team ID
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.academyhealth.knoMe
     cache:
       cache_paths:
         - ~/.npm
@@ -58,27 +60,9 @@ workflows:
       - name: Set up code signing
         script: |
           set -e
-          echo "🔍 Setting up code signing with App Store Connect API..."
-          
-          # Create App Store Connect API key file
-          echo "$APP_STORE_P8" | base64 -d > ~/private_key.p8
-          
-          # Use Codemagic's automatic certificate management
-          keychain initialize
-          
-          # Let Codemagic automatically create and manage certificates
-          app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
-            --issuer-id "$APP_STORE_ISSUER_ID" \
-            --key-id "$APP_STORE_KEY_ID" \
-            --private-key "$(cat ~/private_key.p8)" \
-            --type IOS_APP_STORE \
-            --create
-          
-          keychain add-certificates
-          
-          # Configure Xcode project
-          cd ios/App
-          xcode-project use-profiles
+          echo "🔍 Setting up code signing using Codemagic built-in configuration..."
+          # Code signing is now handled automatically by the ios_signing section
+          echo "✅ Code signing configuration ready"
       - name: Archive (Release)
         script: |
           set -e
