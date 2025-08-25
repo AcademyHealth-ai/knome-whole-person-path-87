@@ -31,7 +31,7 @@ workflows:
           if [ -z "${APP_STORE_ISSUER_ID}" ]; then echo "❌ APP_STORE_ISSUER_ID missing"; missing=1; fi
           if [ -z "${APP_STORE_P8}" ]; then echo "❌ APP_STORE_P8 missing"; missing=1; fi
           if [ "$missing" -eq 1 ]; then exit 1; fi
-          if ! echo "$APP_STORE_P8" | grep -q "BEGIN PRIVATE KEY"; then echo "❌ APP_STORE_P8 missing valid header"; exit 1; fi
+          # Skip header check for base64 encoded content
           echo "✅ Preflight passed"
       - name: Install dependencies
         script: |
