@@ -71,8 +71,8 @@ workflows:
           # Initialize keychain
           keychain initialize
           
-          # Create private key file and verify it
-          echo "$APP_STORE_P8" > ~/private_key.p8
+          # Create private key file and verify it (decode base64)
+          echo "$APP_STORE_P8" | base64 -d > ~/private_key.p8
           echo "🔍 Created key file size: $(wc -c < ~/private_key.p8)"
           
           # Fetch signing files using App Store Connect API
