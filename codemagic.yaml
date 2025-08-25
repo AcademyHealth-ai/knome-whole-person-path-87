@@ -57,7 +57,7 @@ workflows:
       - name: Set up code signing
         script: |
           set -e
-          echo "🔍 Creating certificates and provisioning profiles..."
+          echo "🔍 Fetching existing certificates and provisioning profiles..."
           
           # Create App Store Connect API key file
           echo "$APP_STORE_P8" | base64 -d > ~/private_key.p8
@@ -65,13 +65,23 @@ workflows:
           # Initialize keychain
           keychain initialize
           
-          # Create certificates and provisioning profiles automatically
+          # Try to fetch existing certificates first
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
             --private-key "$(cat ~/private_key.p8)" \
-            --type IOS_APP_STORE \
-            --create
+            --type IOS_APP_STORE || echo "No existing certificates found, will create new ones..."
+          
+          # If no certificates exist, create them
+          if [ $? -ne 0 ]; then
+            echo "Creating new certificates and profiles..."
+            app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
+              --issuer-id "$APP_STORE_ISSUER_ID" \
+              --key-id "$APP_STORE_KEY_ID" \
+              --private-key "$(cat ~/private_key.p8)" \
+              --type IOS_APP_STORE \
+              --create
+          fi
           
           # Add certificates to keychain
           keychain add-certificates
