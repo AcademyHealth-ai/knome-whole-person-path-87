@@ -60,25 +60,20 @@ workflows:
           set -e
           echo "🔍 Setting up code signing with App Store Connect API..."
           
-          # Initialize keychain
-          keychain initialize
-          
-          # Create private key file (decode base64)
+          # Create App Store Connect API key file
           echo "$APP_STORE_P8" | base64 -d > ~/private_key.p8
           
-          # Generate certificate private key
-          openssl genrsa -out ~/cert_key.key 2048
+          # Use Codemagic's automatic certificate management
+          keychain initialize
           
-          # Create certificates and profiles
+          # Let Codemagic automatically create and manage certificates
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
             --private-key "$(cat ~/private_key.p8)" \
             --type IOS_APP_STORE \
-            --certificate-key ~/cert_key.key \
             --create
           
-          # Add certificates to keychain
           keychain add-certificates
           
           # Configure Xcode project
