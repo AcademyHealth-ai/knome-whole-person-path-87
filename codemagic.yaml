@@ -57,9 +57,17 @@ workflows:
           echo "$APP_STORE_P8" | head -n 1
       - name: Set up code signing
         script: |
-          # Certificates and provisioning profiles are automatically managed
-          # by Codemagic when using the ios_signing environment group
-          echo "✅ Code signing handled automatically by Codemagic"
+          set -e
+          cd ios/App
+          
+          # Configure Xcode project with team ID
+          xcrun agvtool new-marketing-version 1.0
+          xcrun agvtool new-version -all 1
+          
+          # Set development team in project settings
+          /usr/libexec/PlistBuddy -c "Set :objects:504EC3031FED79650016851F:attributes:TargetAttributes:504EC3031FED79650016851F:DevelopmentTeam 6547583QJL" App.xcodeproj/project.pbxproj || true
+          
+          echo "✅ Code signing setup complete"
       - name: Archive (Release)
         script: |
           set -e
