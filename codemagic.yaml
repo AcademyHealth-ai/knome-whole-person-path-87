@@ -58,9 +58,12 @@ workflows:
       - name: Set up code signing
         script: |
           cd ios/App
+          echo "🔍 Checking available certificates and profiles:"
+          security find-identity -v -p codesigning
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "No provisioning profiles directory"
           echo "🔍 Current project settings:"
-          xcodebuild -project App.xcodeproj -target App -configuration Release -showBuildSettings | grep -E "(DEVELOPMENT_TEAM|CODE_SIGN|BUNDLE_IDENTIFIER)"
-          echo "✅ Code signing handled automatically by Codemagic using ios_signing environment group"
+          xcodebuild -project App.xcodeproj -target App -configuration Release -showBuildSettings | grep -E "(DEVELOPMENT_TEAM|CODE_SIGN|BUNDLE_IDENTIFIER|PROVISIONING_PROFILE)"
+          echo "✅ Code signing setup ready"
       - name: Archive (Release)
         script: |
           set -e
