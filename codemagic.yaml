@@ -75,11 +75,15 @@ workflows:
           echo "$APP_STORE_P8" | base64 -d > ~/private_key.p8
           echo "🔍 Created key file size: $(wc -c < ~/private_key.p8)"
           
+          # Generate a new certificate private key for signing
+          openssl genrsa -out ~/cert_key.key 2048
+          
           # Fetch signing files using App Store Connect API
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
             --private-key "$(cat ~/private_key.p8)" \
+            --certificate-key ~/cert_key.key \
             --type IOS_APP_STORE \
             --create
           
