@@ -60,12 +60,11 @@ workflows:
           set -e
           cd ios/App
           
-          # Configure Xcode project with team ID
-          xcrun agvtool new-marketing-version 1.0
-          xcrun agvtool new-version -all 1
-          
-          # Set development team in project settings
-          /usr/libexec/PlistBuddy -c "Set :objects:504EC3031FED79650016851F:attributes:TargetAttributes:504EC3031FED79650016851F:DevelopmentTeam 6547583QJL" App.xcodeproj/project.pbxproj || true
+          # Configure project build settings for automatic signing with team ID
+          xcodebuild -project App.xcodeproj -target App -configuration Release \
+            DEVELOPMENT_TEAM=6547583QJL \
+            CODE_SIGN_STYLE=Automatic \
+            -showBuildSettings | grep -E "(DEVELOPMENT_TEAM|CODE_SIGN_STYLE)"
           
           echo "✅ Code signing setup complete"
       - name: Archive (Release)
@@ -80,6 +79,8 @@ workflows:
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_STYLE=Automatic \
             clean archive
       - name: Export IPA
         script: |
