@@ -65,8 +65,9 @@ workflows:
           # Initialize keychain
           keychain initialize
           
-          # Generate certificate private key (required for creating certificates)
+          # Generate certificate private key and CSR
           openssl genrsa -out ~/cert_private_key.key 2048
+          openssl req -new -key ~/cert_private_key.key -out ~/cert_request.csr -subj "/CN=iOS Distribution/O=Academy Health/C=US"
           
           # Create certificates and provisioning profiles automatically
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
