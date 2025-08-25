@@ -57,16 +57,7 @@ workflows:
           echo "$APP_STORE_P8" | head -n 1
       - name: Set up code signing
         script: |
-          set -e
-          cd ios/App
-          
-          # Configure project build settings for automatic signing with team ID
-          xcodebuild -project App.xcodeproj -target App -configuration Release \
-            DEVELOPMENT_TEAM=6547583QJL \
-            CODE_SIGN_STYLE=Automatic \
-            -showBuildSettings | grep -E "(DEVELOPMENT_TEAM|CODE_SIGN_STYLE)"
-          
-          echo "✅ Code signing setup complete"
+          echo "✅ Code signing handled automatically by Codemagic using ios_signing environment group"
       - name: Archive (Release)
         script: |
           set -e
@@ -79,9 +70,6 @@ workflows:
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath "$CM_BUILD_DIR/build/App.xcarchive" \
-            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
-            CODE_SIGN_STYLE=Automatic \
-            -allowProvisioningUpdates \
             clean archive
       - name: Export IPA
         script: |
