@@ -65,12 +65,16 @@ workflows:
           # Initialize keychain
           keychain initialize
           
+          # Generate certificate private key (required for creating certificates)
+          openssl genrsa -out ~/cert_private_key.key 2048
+          
           # Create certificates and provisioning profiles automatically
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" \
             --issuer-id "$APP_STORE_ISSUER_ID" \
             --key-id "$APP_STORE_KEY_ID" \
             --private-key "$(cat ~/private_key.p8)" \
             --type IOS_APP_STORE \
+            --certificate-key ~/cert_private_key.key \
             --create
           
           # Add certificates to keychain
