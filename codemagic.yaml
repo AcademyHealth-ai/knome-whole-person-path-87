@@ -63,9 +63,9 @@ workflows:
            set -e
            echo "🔍 Setting up automatic code signing for App Store distribution..."
            
-           # Create App Store Connect API key file
+           # Use uploaded App Store Connect API key file
            mkdir -p ~/private_keys
-           echo "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+           cp $CM_BUILD_DIR/AuthKey.p8 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
            chmod 600 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
            
            # Set up automatic signing environment
