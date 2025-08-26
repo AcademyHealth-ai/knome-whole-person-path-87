@@ -13,7 +13,7 @@ workflows:
         - ios_signing
       vars:
         XCODE_SCHEME: App
-        BUNDLE_IDENTIFIER: com.academyhealth.knoMe
+        BUNDLE_IDENTIFIER: com.knome
         DEVELOPMENT_TEAM: 6547583QJL
     cache:
       cache_paths:
