@@ -63,9 +63,16 @@ workflows:
            set -e
            echo "🔍 Setting up automatic code signing for App Store distribution..."
            
-           # Use uploaded App Store Connect API key file
+           # Use uploaded App Store Connect API key file (handle both base64 and direct)
            mkdir -p ~/private_keys
-           cp $CM_BUILD_DIR/AuthKey.p8 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+           if [ -f "$CM_BUILD_DIR/AuthKey.p8" ]; then
+             cp $CM_BUILD_DIR/AuthKey.p8 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+           elif [ -n "$AuthKey_p8" ]; then
+             echo "$AuthKey_p8" | base64 -d > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+           else
+             echo "Error: AuthKey.p8 file not found"
+             exit 1
+           fi
            chmod 600 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
            
            # Set up automatic signing environment
