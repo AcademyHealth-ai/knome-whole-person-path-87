@@ -58,41 +58,71 @@ workflows:
           echo "APP_STORE_KEY_ID length: ${#APP_STORE_KEY_ID}"
           echo "APP_STORE_P8 first line:"
           echo "$APP_STORE_P8" | head -n 1
-      - name: Set up code signing
-        script: |
-           set -e
-           echo "🔍 Setting up automatic code signing for App Store distribution..."
-           
-           # Create App Store Connect API key file with validation
-           mkdir -p ~/private_keys
-           echo "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
-           chmod 600 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
-           
-           # Validate the P8 file format
-           if ! grep -q "BEGIN PRIVATE KEY" ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8; then
-             echo "❌ Error: P8 file missing BEGIN PRIVATE KEY header"
-             echo "First few lines of P8 file:"
-             head -3 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
-             exit 1
-           fi
-           if ! grep -q "END PRIVATE KEY" ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8; then
-             echo "❌ Error: P8 file missing END PRIVATE KEY footer"
-             exit 1
-           fi
-           
-           # Set up automatic signing environment
-           export FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD=""
-           export FASTLANE_SESSION=""
-           
-           cd ios/App
-           echo "🔧 Configuring project for automatic signing..."
-           
-           # Update project settings for automatic signing
-           sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj || true
-           sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "'"$DEVELOPMENT_TEAM"'";/g' App.xcodeproj/project.pbxproj || true
-           sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = .*/PRODUCT_BUNDLE_IDENTIFIER = "'"$BUNDLE_IDENTIFIER"'";/g' App.xcodeproj/project.pbxproj || true
-           
-           echo "✅ Code signing setup completed"
+       - name: Set up code signing
+         script: |
+            set -e
+            echo "🔍 Setting up automatic code signing for App Store distribution..."
+            
+            # Create App Store Connect API key file with proper formatting
+            mkdir -p ~/private_keys
+            
+            # Write P8 content preserving line breaks and format
+            cat > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8 << 'EOFP8'
+$APP_STORE_P8
+EOFP8
+            chmod 600 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+            
+            # Validate the P8 file format
+            echo "🔍 Validating P8 file format..."
+            if ! grep -q "BEGIN PRIVATE KEY" ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8; then
+              echo "❌ Error: P8 file missing BEGIN PRIVATE KEY header"
+              echo "P8 file content preview:"
+              head -5 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+              exit 1
+            fi
+            if ! grep -q "END PRIVATE KEY" ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8; then
+              echo "❌ Error: P8 file missing END PRIVATE KEY footer"
+              exit 1
+            fi
+            
+            # Test App Store Connect authentication
+            echo "🔍 Testing App Store Connect authentication..."
+            export FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD=""
+            export FASTLANE_SESSION=""
+            
+            # Create temporary auth test
+            cat > ~/test_auth.rb << 'EOFAUTH'
+require 'spaceship'
+
+begin
+  Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.create(
+    key_id: ENV['APP_STORE_CONNECT_KEY_IDENTIFIER'],
+    issuer_id: ENV['APP_STORE_CONNECT_ISSUER_ID'],
+    filepath: ENV['AUTH_KEY_PATH']
+  )
+  
+  teams = Spaceship::ConnectAPI.get_teams
+  puts "✅ Authentication successful. Found #{teams.count} team(s)"
+  teams.each { |team| puts "  - #{team.name} (#{team.id})" }
+rescue => e
+  puts "❌ Authentication failed: #{e.message}"
+  exit 1
+end
+EOFAUTH
+
+            # Install spaceship and test auth
+            gem install spaceship-fastlane --no-document || true
+            AUTH_KEY_PATH=~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8 ruby ~/test_auth.rb
+            
+            cd ios/App
+            echo "🔧 Configuring project for automatic signing..."
+            
+            # Update project settings for automatic signing
+            sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj || true
+            sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "'"$DEVELOPMENT_TEAM"'";/g' App.xcodeproj/project.pbxproj || true
+            sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = .*/PRODUCT_BUNDLE_IDENTIFIER = "'"$BUNDLE_IDENTIFIER"'";/g' App.xcodeproj/project.pbxproj || true
+            
+            echo "✅ Code signing setup completed"
       - name: Archive (Release)
         script: |
           set -e
