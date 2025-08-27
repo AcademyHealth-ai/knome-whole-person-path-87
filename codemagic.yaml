@@ -67,9 +67,7 @@ workflows:
            mkdir -p ~/private_keys
            
            # Write P8 content preserving line breaks and format
-           cat > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8 << 'EOFP8'
-$APP_STORE_P8
-EOFP8
+           echo "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
            chmod 600 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
            
            # Validate the P8 file format
