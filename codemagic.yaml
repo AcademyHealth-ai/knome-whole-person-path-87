@@ -83,34 +83,10 @@ workflows:
              exit 1
            fi
            
-           # Test App Store Connect authentication
-           echo "🔍 Testing App Store Connect authentication..."
+           # Set up automatic signing environment
+           echo "🔍 Setting up automatic code signing environment..."
            export FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD=""
            export FASTLANE_SESSION=""
-           
-           # Create temporary auth test
-           cat > ~/test_auth.rb << 'EOFAUTH'
-require 'spaceship'
-
-begin
-  Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.create(
-    key_id: ENV['APP_STORE_CONNECT_KEY_IDENTIFIER'],
-    issuer_id: ENV['APP_STORE_CONNECT_ISSUER_ID'],
-    filepath: ENV['AUTH_KEY_PATH']
-  )
-  
-  teams = Spaceship::ConnectAPI.get_teams
-  puts "✅ Authentication successful. Found #{teams.count} team(s)"
-  teams.each { |team| puts "  - #{team.name} (#{team.id})" }
-rescue => e
-  puts "❌ Authentication failed: #{e.message}"
-  exit 1
-end
-EOFAUTH
-
-           # Install spaceship and test auth
-           gem install spaceship-fastlane --no-document || true
-           AUTH_KEY_PATH=~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8 ruby ~/test_auth.rb
            
            cd ios/App
            echo "🔧 Configuring project for automatic signing..."
