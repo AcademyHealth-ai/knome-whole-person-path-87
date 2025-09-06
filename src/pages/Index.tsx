@@ -116,8 +116,8 @@ const Index = () => {
           
           <p className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed animate-fade-in max-w-4xl mx-auto">
             Your personal data, your control, your future. A trauma-informed platform designed 
-            specifically for foster youth to consolidate education, health, and behavioral data 
-            with AI-powered insights.
+            to help you consolidate education, health, and behavioral data 
+            with AI-powered insights for your whole-person wellness journey.
           </p>
 
           <div className="flex items-center justify-center gap-3 mb-12 animate-slide-up flex-wrap">
@@ -232,7 +232,7 @@ const Index = () => {
             </h3>
             <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
               Every aspect of KnoMe is designed with your safety, privacy, and empowerment at the center. 
-              You're not just a user - you're in control.
+              Whether you're starting your wellness journey or looking to take control of your data - you're in charge.
             </p>
             
             <div className="grid md:grid-cols-3 gap-12">

@@ -19,9 +19,9 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'KnoMe - Whole Person Path',
+        name: 'KnoMe - Whole Person Wellness Path',
         short_name: 'KnoMe',
-        description: 'Privacy-first wellness platform with AI-powered personalized guidance',
+        description: 'Privacy-first wellness platform with AI-powered personalized guidance for your whole-person wellness journey',
         theme_color: '#8B5CF6',
         background_color: '#ffffff',
         display: 'standalone',
