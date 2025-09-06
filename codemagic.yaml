@@ -58,42 +58,42 @@ workflows:
           echo "APP_STORE_KEY_ID length: ${#APP_STORE_KEY_ID}"
           echo "APP_STORE_P8 first line:"
           echo "$APP_STORE_P8" | head -n 1
-       - name: Set up code signing
-         script: |
-           set -e
-           echo "🔍 Setting up App Store Connect API authentication..."
-           
-           # Create App Store Connect API key file with proper formatting
-           mkdir -p ~/private_keys
-           
-           # Write P8 content preserving line breaks and format
-           echo -e "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
-           chmod 600 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
-           
-           # Validate the P8 file format
-           echo "🔍 Validating P8 file format..."
-           if ! grep -q "BEGIN PRIVATE KEY" ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8; then
-             echo "❌ Error: P8 file missing BEGIN PRIVATE KEY header"
-             echo "P8 file content preview:"
-             head -5 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
-             exit 1
-           fi
-           if ! grep -q "END PRIVATE KEY" ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8; then
-             echo "❌ Error: P8 file missing END PRIVATE KEY footer"
-             exit 1
-           fi
-           
-           echo "✅ P8 file validation passed"
-           
-           cd ios/App
-           echo "🔧 Configuring project for automatic signing..."
-           
-           # Update project settings for automatic signing
-           sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj || true
-           sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "'"$DEVELOPMENT_TEAM"'";/g' App.xcodeproj/project.pbxproj || true
-           sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = .*/PRODUCT_BUNDLE_IDENTIFIER = "'"$BUNDLE_IDENTIFIER"'";/g' App.xcodeproj/project.pbxproj || true
-           
-           echo "✅ Code signing setup completed"
+      - name: Set up code signing
+        script: |
+          set -e
+          echo "🔍 Setting up App Store Connect API authentication..."
+          
+          # Create App Store Connect API key file with proper formatting
+          mkdir -p ~/private_keys
+          
+          # Write P8 content preserving line breaks and format
+          echo -e "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+          chmod 600 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+          
+          # Validate the P8 file format
+          echo "🔍 Validating P8 file format..."
+          if ! grep -q "BEGIN PRIVATE KEY" ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8; then
+            echo "❌ Error: P8 file missing BEGIN PRIVATE KEY header"
+            echo "P8 file content preview:"
+            head -5 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+            exit 1
+          fi
+          if ! grep -q "END PRIVATE KEY" ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8; then
+            echo "❌ Error: P8 file missing END PRIVATE KEY footer"
+            exit 1
+          fi
+          
+          echo "✅ P8 file validation passed"
+          
+          cd ios/App
+          echo "🔧 Configuring project for automatic signing..."
+          
+          # Update project settings for automatic signing
+          sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj || true
+          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "'"$DEVELOPMENT_TEAM"'";/g' App.xcodeproj/project.pbxproj || true
+          sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = .*/PRODUCT_BUNDLE_IDENTIFIER = "'"$BUNDLE_IDENTIFIER"'";/g' App.xcodeproj/project.pbxproj || true
+          
+          echo "✅ Code signing setup completed"
       - name: Archive (Release)
         script: |
           set -e
