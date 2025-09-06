@@ -159,6 +159,24 @@ const Index = () => {
               Partner Preview
             </IOSButton>
           </div>
+
+          {/* SOLID POD Creation Link */}
+          <div className="mb-12 animate-fade-in">
+            <p className="text-center text-muted-foreground mb-4">
+              Ready to create your decentralized data wallet?
+            </p>
+            <div className="flex justify-center">
+              <a
+                href="https://start.inrupt.com/profile"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-6 py-3 rounded-lg bg-wellness-teal/10 border border-wellness-teal/30 text-wellness-teal hover:bg-wellness-teal/20 transition-all duration-300 font-medium"
+              >
+                <Shield className="mr-2 h-5 w-5" />
+                Create Your SOLID POD
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Feature Cards with Background Context */}
@@ -167,10 +185,10 @@ const Index = () => {
             {
               icon: Shield,
               title: "Data Wallet",
-              description: "Secure, encrypted storage for all your important documents and records",
+              description: "Create your own SOLID POD for secure, decentralized storage of all your important documents and records",
               gradient: "from-blue-500/20 to-blue-600/20",
               iconColor: "text-blue-600",
-              bgContext: "Your personal information, safely stored and always under your control"
+              bgContext: "Your personal data pod - truly owned by you, accessible anywhere, compatible with the decentralized web"
             },
             {
               icon: Brain,
