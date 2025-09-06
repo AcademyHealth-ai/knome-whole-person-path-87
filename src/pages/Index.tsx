@@ -23,9 +23,15 @@ const Index = () => {
   };
 
   return (
-    <SafeAreaView className="min-h-screen bg-gradient-ios">
+    <SafeAreaView className="min-h-screen bg-gradient-hero relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-wellness-teal/5 rounded-full blur-3xl animate-float" style={{animationDelay: '1s'}}></div>
+      </div>
+
       {/* Hero Section */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-8 relative">
         {/* Auth Status Bar */}
         <div className="flex justify-end mb-8">
           {user ? (
@@ -38,6 +44,7 @@ const Index = () => {
                 variant="outline"
                 size="sm"
                 onClick={signOut}
+                className="glass-effect"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
@@ -48,6 +55,7 @@ const Index = () => {
               variant="outline"
               size="sm"
               onClick={() => navigate('/auth')}
+              className="glass-effect"
             >
               <LogIn className="h-4 w-4 mr-2" />
               Sign In
@@ -55,37 +63,41 @@ const Index = () => {
           )}
         </div>
 
-        <div className="text-center max-w-4xl mx-auto">
-          <div className="flex items-center justify-center mb-6">
-            <div className="bg-gradient-primary rounded-full p-3 mr-4" aria-hidden="true">
-              <Brain className="h-8 w-8 text-white" />
+        <div className="text-center max-w-5xl mx-auto">
+          <div className="flex items-center justify-center mb-8 animate-scale-in">
+            <div className="bg-gradient-wellness rounded-full p-4 mr-6 animate-glow" aria-hidden="true">
+              <Brain className="h-10 w-10 text-white" />
             </div>
-            <h1 className="text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              KnoMe.app
+            <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-wellness bg-clip-text text-transparent">
+              KnoMe
             </h1>
           </div>
           
-          <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+          <p className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed animate-fade-in max-w-4xl mx-auto">
             Your personal data, your control, your future. A trauma-informed platform designed 
             specifically for foster youth to consolidate education, health, and behavioral data 
             with AI-powered insights.
           </p>
 
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <Shield className="h-5 w-5 text-primary" />
-            <span className="text-sm text-muted-foreground font-medium">Privacy-First</span>
-            <span className="text-muted-foreground/50">•</span>
-            <Heart className="h-5 w-5 text-primary" />
-            <span className="text-sm text-muted-foreground font-medium">Trauma-Informed</span>
-            <span className="text-muted-foreground/50">•</span>
-            <Sparkles className="h-5 w-5 text-primary" />
-            <span className="text-sm text-muted-foreground font-medium">AI-Powered</span>
+          <div className="flex items-center justify-center gap-3 mb-12 animate-slide-up flex-wrap">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 backdrop-blur-sm">
+              <Shield className="h-5 w-5 text-primary" />
+              <span className="text-sm font-semibold text-primary">Privacy-First</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-wellness-coral/10 backdrop-blur-sm">
+              <Heart className="h-5 w-5 text-wellness-coral" />
+              <span className="text-sm font-semibold text-wellness-coral">Trauma-Informed</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-wellness-teal/10 backdrop-blur-sm">
+              <Sparkles className="h-5 w-5 text-wellness-teal" />
+              <span className="text-sm font-semibold text-wellness-teal">AI-Powered</span>
+            </div>
           </div>
 
-          <div className="flex items-center justify-center gap-3 mb-8">
+          <div className="flex items-center justify-center gap-4 mb-16 flex-wrap animate-slide-up" style={{animationDelay: '0.2s'}}>
             <IOSButton 
               onClick={handleGetStarted}
-              className={`px-8 py-4 text-lg font-semibold transition-all duration-300 transform ${isAnimated ? 'scale-95' : 'hover:scale-105'} shadow-lg hover:shadow-xl`}
+              className={`wellness-button px-8 py-4 text-lg font-bold transition-all duration-500 transform ${isAnimated ? 'scale-95' : 'hover:scale-105'} bg-gradient-wellness text-white border-0`}
             >
               {user ? 'Go to Dashboard' : 'Get Started with KnoMe'}
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -93,14 +105,15 @@ const Index = () => {
             <IOSButton
               variant="outline"
               onClick={() => setAssistantOpen(true)}
-              className="px-6 py-4 text-lg font-semibold"
+              className="wellness-button px-6 py-4 text-lg font-semibold glass-effect"
             >
+              <Bot className="mr-2 h-5 w-5" />
               Ask Stanley
             </IOSButton>
             <IOSButton
               variant="ghost"
               onClick={() => navigate('/partners/turnaround')}
-              className="px-6 py-4 text-lg font-semibold"
+              className="wellness-button px-6 py-4 text-lg font-semibold hover:bg-primary/10"
             >
               Partner Preview
             </IOSButton>
@@ -108,51 +121,61 @@ const Index = () => {
         </div>
 
         {/* Feature Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-20">
           {[
             {
               icon: Shield,
               title: "Data Wallet",
               description: "Secure, encrypted storage for all your important documents and records",
-              color: "bg-blue-500/10 text-blue-600"
+              gradient: "from-blue-500/20 to-blue-600/20",
+              iconColor: "text-blue-600"
             },
             {
               icon: Brain,
               title: "AI Assistant Stanley",
               description: "Personalized insights and recommendations tailored to your journey",
-              color: "bg-purple-500/10 text-purple-600"
+              gradient: "from-purple-500/20 to-purple-600/20",
+              iconColor: "text-purple-600"
             },
             {
               icon: Heart,
               title: "Whole-Person Profile",
               description: "Visual representation of your cognitive, social, emotional, and physical growth",
-              color: "bg-green-500/10 text-green-600"
+              gradient: "from-pink-500/20 to-pink-600/20",
+              iconColor: "text-pink-600"
             },
             {
               icon: Users,
               title: "Personalized Roadmap",
               description: "Dynamic milestones and goals that adapt as you progress",
-              color: "bg-orange-500/10 text-orange-600"
+              gradient: "from-teal-500/20 to-teal-600/20",
+              iconColor: "text-teal-600"
             }
           ].map((feature, index) => (
-            <IOSCard key={index} className="group hover:shadow-lg transition-all duration-300 hover:scale-105">
-              <div className="text-center pb-2">
-                <div className={`w-12 h-12 rounded-full ${feature.color} mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                  <feature.icon className="h-6 w-6" />
+            <div 
+              key={index} 
+              className="wellness-card group p-6 animate-fade-in"
+              style={{animationDelay: `${index * 0.1}s`}}
+            >
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.gradient} mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-all duration-500 backdrop-blur-sm`}>
+                  <feature.icon className={`h-8 w-8 ${feature.iconColor}`} />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                <h3 className="text-xl font-bold mb-4 text-foreground">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
-              <p className="text-center text-muted-foreground leading-relaxed text-sm">
-                {feature.description}
-              </p>
-            </IOSCard>
+            </div>
           ))}
         </div>
 
         {/* Trust Indicators */}
-        <IOSCard blur className="mt-16 p-8">
-          <h3 className="text-2xl font-bold text-center mb-8">Built with Your Privacy in Mind</h3>
-          <div className="grid md:grid-cols-3 gap-8">
+        <div className="wellness-card mt-24 p-12 glass-effect animate-fade-in" style={{animationDelay: '0.6s'}}>
+          <h3 className="text-3xl font-bold text-center mb-12 bg-gradient-wellness bg-clip-text text-transparent">
+            Built with Your Privacy in Mind
+          </h3>
+          <div className="grid md:grid-cols-3 gap-12">
             {[
               {
                 title: "HIPAA Compliant",
@@ -167,16 +190,17 @@ const Index = () => {
                 description: "Complete control over who sees what, when, and for how long"
               }
             ].map((item, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-primary/10 rounded-full mx-auto mb-4 flex items-center justify-center" aria-hidden="true">
-                  <Shield className="h-8 w-8 text-primary" />
+              <div key={index} className="text-center group">
+                <div className="w-20 h-20 bg-gradient-wellness rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-all duration-500" aria-hidden="true">
+                  <Shield className="h-10 w-10 text-white" />
                 </div>
-                <h4 className="font-semibold mb-2">{item.title}</h4>
-                <p className="text-muted-foreground text-sm">{item.description}</p>
+                <h4 className="text-xl font-bold mb-4 text-foreground">{item.title}</h4>
+                <p className="text-muted-foreground leading-relaxed">{item.description}</p>
               </div>
             ))}
           </div>
-        </IOSCard>
+        </div>
+        
         <AIAssistant open={assistantOpen} onOpenChange={setAssistantOpen} />
       </div>
     </SafeAreaView>
