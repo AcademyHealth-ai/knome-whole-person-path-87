@@ -129,10 +129,21 @@ workflows:
           cd ios/App
           echo "🔧 Configuring project for automatic signing..."
           
-          # Update project settings for automatic signing
+          # Update project settings for automatic signing - be more aggressive with replacements
           sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj || true
+          sed -i '' 's/CODE_SIGN_STYLE = "Manual"/CODE_SIGN_STYLE = Automatic/g' App.xcodeproj/project.pbxproj || true
+          
+          # Set development team in all configurations
           sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "'"$DEVELOPMENT_TEAM"'";/g' App.xcodeproj/project.pbxproj || true
+          sed -i '' 's/DEVELOPMENT_TEAM = ""/DEVELOPMENT_TEAM = "'"$DEVELOPMENT_TEAM"'"/g' App.xcodeproj/project.pbxproj || true
+          sed -i '' '/buildSettings = {/,/};/{s/DEVELOPMENT_TEAM = [^;]*/DEVELOPMENT_TEAM = "'"$DEVELOPMENT_TEAM"'"/g;}' App.xcodeproj/project.pbxproj || true
+          
+          # Update bundle identifier
           sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = .*/PRODUCT_BUNDLE_IDENTIFIER = "'"$BUNDLE_IDENTIFIER"'";/g' App.xcodeproj/project.pbxproj || true
+          
+          echo "🔍 Verifying project settings..."
+          grep -n "DEVELOPMENT_TEAM" App.xcodeproj/project.pbxproj | head -5
+          grep -n "CODE_SIGN_STYLE" App.xcodeproj/project.pbxproj | head -5
           
           echo "✅ Code signing setup completed"
       - name: Archive (Release)
