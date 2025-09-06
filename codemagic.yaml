@@ -58,6 +58,12 @@ workflows:
           echo "APP_STORE_KEY_ID length: ${#APP_STORE_KEY_ID}"
           echo "APP_STORE_P8 first line:"
           echo "$APP_STORE_P8" | head -n 1
+          echo ""
+          echo "⚠️  CRITICAL AUTHENTICATION CHECKLIST:"
+          echo "⚠️  1. Verify DEVELOPMENT_TEAM ($DEVELOPMENT_TEAM) matches your API key's team"
+          echo "⚠️  2. Ensure API key has 'Developer' role (not just 'App Manager')"
+          echo "⚠️  3. Confirm KEY_ID and ISSUER_ID are from the same Apple Developer account"
+          echo "⚠️  4. Bundle ID ($BUNDLE_IDENTIFIER) must be registered for this team"
       - name: Set up code signing
         script: |
           set -e
