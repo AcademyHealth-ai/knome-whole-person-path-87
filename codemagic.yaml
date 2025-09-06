@@ -66,8 +66,14 @@ workflows:
           # Create App Store Connect API key file with proper formatting
           mkdir -p ~/private_keys
           
-          # Write P8 content preserving line breaks and format
-          echo -e "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+          # Write P8 content - decode if base64 encoded, preserve line breaks
+          if echo "$APP_STORE_P8" | base64 -d >/dev/null 2>&1; then
+            echo "Decoding base64 encoded P8 key..."
+            echo "$APP_STORE_P8" | base64 -d > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+          else
+            echo "Using P8 key as-is..."
+            echo -e "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+          fi
           chmod 600 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
           
           # Validate the P8 file format
