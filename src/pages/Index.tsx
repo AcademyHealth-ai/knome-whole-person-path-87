@@ -252,6 +252,23 @@ const Index = () => {
               </div>
             ))}
           </div>
+          
+          <div className="mt-8 p-6 rounded-xl bg-gradient-to-r from-primary/5 to-wellness-teal/5 border border-primary/20">
+            <h4 className="text-lg font-semibold mb-3 text-foreground">Beyond Individual Assessment</h4>
+            <p className="text-muted-foreground mb-4">
+              After completing assessments, we guide you through exploring broader influences on your development:
+            </p>
+            <div className="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <h5 className="font-medium text-foreground mb-2">Family Health Patterns</h5>
+                <p className="text-muted-foreground">Parent health, learning, and mental health histories that may provide important context</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-foreground mb-2">Environmental Influences</h5>
+                <p className="text-muted-foreground">Childhood stability, mobility patterns, family dynamics, and sibling relationships</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Enhanced Trust Indicators */}
