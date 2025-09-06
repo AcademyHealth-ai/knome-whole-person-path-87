@@ -117,7 +117,7 @@ const Index = () => {
           <p className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed animate-fade-in max-w-4xl mx-auto">
             A trauma-informed platform designed 
             to help you consolidate education, health, and behavioral data 
-            with AI-powered insights for your whole-person wellness journey.
+            with AI-powered insights for your self discovery and holistic health.
           </p>
 
           <div className="flex items-center justify-center gap-3 mb-12 animate-slide-up flex-wrap">
@@ -285,7 +285,7 @@ const Index = () => {
             </h3>
             <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
               Every aspect of KnoMe is designed with your safety, privacy, and empowerment at the center. 
-              Whether you're starting your wellness journey or looking to take control of your data - you're in charge.
+              Whether you're starting your self discovery and holistic health or looking to take control of your data - you're in charge.
             </p>
             
             <div className="grid md:grid-cols-3 gap-12">
