@@ -281,29 +281,29 @@ const Index = () => {
           
           <div className="relative">
             <h3 className="text-3xl font-bold text-center mb-6 bg-gradient-wellness bg-clip-text text-transparent">
-              Built with Your Privacy in Mind
+              Truly Decentralized Privacy
             </h3>
-            <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-              Every aspect of KnoMe is designed with your safety, privacy, and empowerment at the center. 
-              Whether you're starting your self discovery and holistic health or looking to take control of your data - you're in charge.
+            <p className="text-center text-muted-foreground mb-12 max-w-3xl mx-auto">
+              KnoMe is a dApp (decentralized app) - your data never leaves your device. With on-app encryption and on-app AI, 
+              there's no centralized vulnerability because there's NO DATA ON THE CLOUD.
             </p>
             
             <div className="grid md:grid-cols-3 gap-12">
               {[
                 {
-                  title: "HIPAA Compliant",
-                  description: "Your health data is protected according to the highest medical privacy standards",
-                  detail: "Bank-level encryption ensures your sensitive information stays private"
+                  title: "On-Device Processing",
+                  description: "All AI analysis happens directly on your device - never transmitted anywhere",
+                  detail: "Your insights are generated locally using advanced on-app AI technology"
                 },
                 {
-                  title: "FERPA Compliant", 
-                  description: "Educational records are secured according to federal education privacy laws",
-                  detail: "Your academic journey is protected while remaining accessible to you"
+                  title: "Local Encryption", 
+                  description: "Data is encrypted and stored only on your device with zero cloud dependency",
+                  detail: "Military-grade encryption that only you control - no external servers involved"
                 },
                 {
-                  title: "You Own Your Data",
-                  description: "Complete control over who sees what, when, and for how long",
-                  detail: "Download, delete, or share your information - it's always your choice"
+                  title: "True Data Ownership",
+                  description: "As a dApp, there's no central database collecting your information",
+                  detail: "Complete sovereignty over your data - share what you want, when you want"
                 }
               ].map((item, index) => (
                 <div key={index} className="text-center group">
