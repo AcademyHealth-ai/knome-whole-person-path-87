@@ -76,6 +76,13 @@ workflows:
           set -e
           echo "🔍 Setting up App Store Connect API authentication..."
           
+          # Set development team in Xcode project
+          echo "Setting DEVELOPMENT_TEAM to: $DEVELOPMENT_TEAM"
+          /usr/libexec/PlistBuddy -c "Set :objects:23EC762B2BBE03610001D57F:attributes:DEVELOPMENT_TEAM $DEVELOPMENT_TEAM" ios/App/App.xcodeproj/project.pbxproj || echo "Failed to set development team in project.pbxproj"
+          
+          # Also set it using xcodebuild
+          xcodebuild -project ios/App/App.xcodeproj -target App -configuration Release DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" CODE_SIGN_STYLE=Automatic -showBuildSettings | head -20
+          
           # Create App Store Connect API key file with proper formatting
           mkdir -p ~/private_keys
           
