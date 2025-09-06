@@ -115,7 +115,7 @@ const Index = () => {
           </div>
           
           <p className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed animate-fade-in max-w-4xl mx-auto">
-            Your personal data, your control, your future. A trauma-informed platform designed 
+            A trauma-informed platform designed 
             to help you consolidate education, health, and behavioral data 
             with AI-powered insights for your whole-person wellness journey.
           </p>
