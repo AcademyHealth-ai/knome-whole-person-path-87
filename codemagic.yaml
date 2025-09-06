@@ -64,6 +64,13 @@ workflows:
           echo "⚠️  2. Ensure API key has 'Developer' role (not just 'App Manager')"
           echo "⚠️  3. Confirm KEY_ID and ISSUER_ID are from the same Apple Developer account"
           echo "⚠️  4. Bundle ID ($BUNDLE_IDENTIFIER) must be registered for this team"
+          
+          # Check if DEVELOPMENT_TEAM is properly set
+          if [ -z "$DEVELOPMENT_TEAM" ]; then
+            echo "❌ ERROR: DEVELOPMENT_TEAM environment variable is not set!"
+            echo "Please add DEVELOPMENT_TEAM to your Codemagic environment variables"
+            exit 1
+          fi
       - name: Set up code signing
         script: |
           set -e
