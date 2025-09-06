@@ -58,16 +58,16 @@ workflows:
           echo "APP_STORE_KEY_ID length: ${#APP_STORE_KEY_ID}"
           echo "APP_STORE_P8 first line:"
           echo "$APP_STORE_P8" | head -n 1
-      - name: Set up code signing
-        script: |
+       - name: Set up code signing
+         script: |
            set -e
-           echo "🔍 Setting up automatic code signing for App Store distribution..."
+           echo "🔍 Setting up App Store Connect API authentication..."
            
            # Create App Store Connect API key file with proper formatting
            mkdir -p ~/private_keys
            
            # Write P8 content preserving line breaks and format
-           echo "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+           echo -e "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
            chmod 600 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
            
            # Validate the P8 file format
@@ -83,10 +83,7 @@ workflows:
              exit 1
            fi
            
-           # Set up automatic signing environment
-           echo "🔍 Setting up automatic code signing environment..."
-           export FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD=""
-           export FASTLANE_SESSION=""
+           echo "✅ P8 file validation passed"
            
            cd ios/App
            echo "🔧 Configuring project for automatic signing..."
