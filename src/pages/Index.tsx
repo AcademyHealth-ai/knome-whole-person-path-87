@@ -218,6 +218,42 @@ const Index = () => {
           ))}
         </div>
 
+        {/* Pilot Program Assessments */}
+        <div className="wellness-card mt-20 p-10 glass-effect animate-fade-in" style={{animationDelay: '0.5s'}}>
+          <h3 className="text-2xl font-bold text-center mb-6 text-foreground">
+            Validated Assessment Tools Available in Our Pilot
+          </h3>
+          <p className="text-center text-muted-foreground mb-8 max-w-3xl mx-auto">
+            Access professional-grade assessments to better understand your learning patterns, attention, and cognitive abilities.
+          </p>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                title: "LASSI Assessment",
+                subtitle: "Learning and Study Skills Inventory",
+                description: "Comprehensive evaluation of your learning strategies and study habits"
+              },
+              {
+                title: "MOXO Diagnostic",
+                subtitle: "Attention Assessment",
+                description: "Evidence-based attention and focus evaluation tools"
+              },
+              {
+                title: "NASA Cognitive Assessment",
+                subtitle: "UPENN Neuroscience",
+                description: "Public access cognitive function evaluation from leading researchers"
+              }
+            ].map((assessment, index) => (
+              <div key={index} className="text-center p-6 rounded-xl border border-border/50 bg-card/50 hover:bg-card/80 transition-all duration-300">
+                <h4 className="text-lg font-bold mb-2 text-foreground">{assessment.title}</h4>
+                <p className="text-sm font-medium text-primary mb-3">{assessment.subtitle}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{assessment.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Enhanced Trust Indicators */}
         <div className="wellness-card mt-24 p-12 glass-effect animate-fade-in relative overflow-hidden" style={{animationDelay: '0.6s'}}>
           {/* Subtle background pattern */}
