@@ -69,17 +69,25 @@ workflows:
           # Write P8 content - handle both raw and base64 encoded formats
           echo "Processing P8 key..."
           
+          # Clean the P8 content by removing any whitespace/newlines that might interfere
+          CLEAN_P8=$(echo "$APP_STORE_P8" | tr -d '\r\n' | tr -d ' ')
+          
           # First try to use the key as-is if it already contains PEM headers
           if echo "$APP_STORE_P8" | grep -q "BEGIN PRIVATE KEY"; then
             echo "Using P8 key as-is (already in PEM format)..."
-            echo -e "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
-          # Try base64 decode and check if result is valid PEM
-          elif echo "$APP_STORE_P8" | base64 -d 2>/dev/null | grep -q "BEGIN PRIVATE KEY"; then
+            echo "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+          # Try base64 decode with cleaned content
+          elif echo "$CLEAN_P8" | base64 -d 2>/dev/null | grep -q "BEGIN PRIVATE KEY"; then
             echo "Decoding base64 encoded P8 key..."
-            echo "$APP_STORE_P8" | base64 -d > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+            echo "$CLEAN_P8" | base64 -d > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+          # If base64 decode doesn't work, try to construct a proper PEM format
           else
-            echo "Using P8 key as raw content..."
-            echo -e "$APP_STORE_P8" > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
+            echo "Constructing P8 key in PEM format..."
+            {
+              echo "-----BEGIN PRIVATE KEY-----"
+              echo "$CLEAN_P8" | fold -w 64
+              echo "-----END PRIVATE KEY-----"
+            } > ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
           fi
           chmod 600 ~/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8
           
