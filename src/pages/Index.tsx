@@ -183,10 +183,10 @@ const Index = () => {
             {
               icon: Heart,
               title: "Whole-Person Profile",
-              description: "Visual representation of your cognitive, social, emotional, and physical growth",
+              description: "Start by sharing your health and learning journey in your own words, then validate with historic records when needed",
               gradient: "from-pink-500/20 to-pink-600/20",
               iconColor: "text-pink-600",
-              bgContext: "See your complete self - strengths, growth areas, and achievements"
+              bgContext: "Your story matters - narrate your experiences, then access PDFs or APIs to confirm details"
             },
             {
               icon: Users,
