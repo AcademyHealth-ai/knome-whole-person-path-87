@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SafeAreaView } from '@/components/ios/SafeAreaView';
 import { IOSCard } from '@/components/ios/IOSCard';
@@ -7,11 +7,33 @@ import { useAuth } from '@/hooks/useAuth';
 import { AIAssistant } from '@/components/AIAssistant';
 import { Shield, Heart, Brain, Users, ArrowRight, Sparkles, LogIn, UserCircle, LogOut, Bot } from 'lucide-react';
 
+// Import background images
+import therapySessionBg from '@/assets/therapy-session-bg.jpg';
+import familySupportBg from '@/assets/family-support-bg.jpg';
+import achievementBg from '@/assets/achievement-bg.jpg';
+import mentorshipBg from '@/assets/mentorship-bg.jpg';
+
 const Index = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [isAnimated, setIsAnimated] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  
+  const backgroundImages = [
+    therapySessionBg,
+    familySupportBg, 
+    achievementBg,
+    mentorshipBg
+  ];
+
+  // Rotate background images every 8 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBgIndex((prev) => (prev + 1) % backgroundImages.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [backgroundImages.length]);
 
   const handleGetStarted = () => {
     setIsAnimated(true);
@@ -23,7 +45,26 @@ const Index = () => {
   };
 
   return (
-    <SafeAreaView className="min-h-screen bg-gradient-hero relative overflow-hidden">
+    <SafeAreaView className="min-h-screen relative overflow-hidden">
+      {/* Dynamic Background Images with Fade Overlay */}
+      {backgroundImages.map((bg, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-2000 ${
+            index === currentBgIndex ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{
+            backgroundImage: `url(${bg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+      ))}
+      
+      {/* Gradient Overlay for Content Readability */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/10 backdrop-blur-sm"></div>
+      
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"></div>
@@ -120,7 +161,7 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Feature Cards */}
+        {/* Feature Cards with Background Context */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-20">
           {[
             {
@@ -128,33 +169,37 @@ const Index = () => {
               title: "Data Wallet",
               description: "Secure, encrypted storage for all your important documents and records",
               gradient: "from-blue-500/20 to-blue-600/20",
-              iconColor: "text-blue-600"
+              iconColor: "text-blue-600",
+              bgContext: "Your personal information, safely stored and always under your control"
             },
             {
               icon: Brain,
               title: "AI Assistant Stanley",
               description: "Personalized insights and recommendations tailored to your journey",
               gradient: "from-purple-500/20 to-purple-600/20",
-              iconColor: "text-purple-600"
+              iconColor: "text-purple-600",
+              bgContext: "Like having a wise mentor who understands your unique path"
             },
             {
               icon: Heart,
               title: "Whole-Person Profile",
               description: "Visual representation of your cognitive, social, emotional, and physical growth",
               gradient: "from-pink-500/20 to-pink-600/20",
-              iconColor: "text-pink-600"
+              iconColor: "text-pink-600",
+              bgContext: "See your complete self - strengths, growth areas, and achievements"
             },
             {
               icon: Users,
               title: "Personalized Roadmap",
               description: "Dynamic milestones and goals that adapt as you progress",
               gradient: "from-teal-500/20 to-teal-600/20",
-              iconColor: "text-teal-600"
+              iconColor: "text-teal-600",
+              bgContext: "Your journey, your pace, your success story in the making"
             }
           ].map((feature, index) => (
             <div 
               key={index} 
-              className="wellness-card group p-6 animate-fade-in"
+              className="wellness-card group p-6 animate-fade-in glass-effect"
               style={{animationDelay: `${index * 0.1}s`}}
             >
               <div className="text-center">
@@ -162,42 +207,62 @@ const Index = () => {
                   <feature.icon className={`h-8 w-8 ${feature.iconColor}`} />
                 </div>
                 <h3 className="text-xl font-bold mb-4 text-foreground">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed mb-3">
                   {feature.description}
+                </p>
+                <p className="text-sm text-primary/80 italic">
+                  {feature.bgContext}
                 </p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Trust Indicators */}
-        <div className="wellness-card mt-24 p-12 glass-effect animate-fade-in" style={{animationDelay: '0.6s'}}>
-          <h3 className="text-3xl font-bold text-center mb-12 bg-gradient-wellness bg-clip-text text-transparent">
-            Built with Your Privacy in Mind
-          </h3>
-          <div className="grid md:grid-cols-3 gap-12">
-            {[
-              {
-                title: "HIPAA Compliant",
-                description: "Your health data is protected according to the highest medical privacy standards"
-              },
-              {
-                title: "FERPA Compliant", 
-                description: "Educational records are secured according to federal education privacy laws"
-              },
-              {
-                title: "You Own Your Data",
-                description: "Complete control over who sees what, when, and for how long"
-              }
-            ].map((item, index) => (
-              <div key={index} className="text-center group">
-                <div className="w-20 h-20 bg-gradient-wellness rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-all duration-500" aria-hidden="true">
-                  <Shield className="h-10 w-10 text-white" />
+        {/* Enhanced Trust Indicators */}
+        <div className="wellness-card mt-24 p-12 glass-effect animate-fade-in relative overflow-hidden" style={{animationDelay: '0.6s'}}>
+          {/* Subtle background pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-4 right-4 w-32 h-32 border border-primary rounded-full"></div>
+            <div className="absolute bottom-4 left-4 w-24 h-24 border border-wellness-teal rounded-full"></div>
+          </div>
+          
+          <div className="relative">
+            <h3 className="text-3xl font-bold text-center mb-6 bg-gradient-wellness bg-clip-text text-transparent">
+              Built with Your Privacy in Mind
+            </h3>
+            <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+              Every aspect of KnoMe is designed with your safety, privacy, and empowerment at the center. 
+              You're not just a user - you're in control.
+            </p>
+            
+            <div className="grid md:grid-cols-3 gap-12">
+              {[
+                {
+                  title: "HIPAA Compliant",
+                  description: "Your health data is protected according to the highest medical privacy standards",
+                  detail: "Bank-level encryption ensures your sensitive information stays private"
+                },
+                {
+                  title: "FERPA Compliant", 
+                  description: "Educational records are secured according to federal education privacy laws",
+                  detail: "Your academic journey is protected while remaining accessible to you"
+                },
+                {
+                  title: "You Own Your Data",
+                  description: "Complete control over who sees what, when, and for how long",
+                  detail: "Download, delete, or share your information - it's always your choice"
+                }
+              ].map((item, index) => (
+                <div key={index} className="text-center group">
+                  <div className="w-20 h-20 bg-gradient-wellness rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-all duration-500 shadow-lg" aria-hidden="true">
+                    <Shield className="h-10 w-10 text-white" />
+                  </div>
+                  <h4 className="text-xl font-bold mb-4 text-foreground">{item.title}</h4>
+                  <p className="text-muted-foreground leading-relaxed mb-3">{item.description}</p>
+                  <p className="text-sm text-primary/70 italic">{item.detail}</p>
                 </div>
-                <h4 className="text-xl font-bold mb-4 text-foreground">{item.title}</h4>
-                <p className="text-muted-foreground leading-relaxed">{item.description}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
         
