@@ -5,7 +5,8 @@ import { IOSCard } from '@/components/ios/IOSCard';
 import { IOSButton } from '@/components/ios/IOSButton';
 import { useAuth } from '@/hooks/useAuth';
 import { AIAssistant } from '@/components/AIAssistant';
-import { Shield, Heart, Brain, Users, ArrowRight, Sparkles, LogIn, UserCircle, LogOut, Bot } from 'lucide-react';
+import { Shield, Heart, Users, ArrowRight, Sparkles, LogIn, UserCircle, LogOut, Bot, User } from 'lucide-react';
+import { ThinkerIcon } from '@/components/icons/ThinkerIcon';
 
 // Import background images
 import therapySessionBg from '@/assets/therapy-session-bg.jpg';
@@ -107,7 +108,7 @@ const Index = () => {
         <div className="text-center max-w-5xl mx-auto">
           <div className="flex items-center justify-center mb-8 animate-scale-in">
             <div className="bg-gradient-wellness rounded-full p-4 mr-6 animate-glow" aria-hidden="true">
-              <Brain className="h-10 w-10 text-white" />
+              <ThinkerIcon className="h-10 w-10" />
             </div>
             <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-wellness bg-clip-text text-transparent">
               KnoMe
@@ -191,7 +192,7 @@ const Index = () => {
               bgContext: "Your personal data pod - truly owned by you, accessible anywhere, compatible with the decentralized web"
             },
             {
-              icon: Brain,
+              icon: User,
               title: "AI Assistant Stanley",
               description: "Personalized insights and recommendations tailored to your journey",
               gradient: "from-purple-500/20 to-purple-600/20",
