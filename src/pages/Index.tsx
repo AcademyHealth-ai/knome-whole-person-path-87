@@ -6,7 +6,7 @@ import { IOSButton } from '@/components/ios/IOSButton';
 import { useAuth } from '@/hooks/useAuth';
 import { AIAssistant } from '@/components/AIAssistant';
 import { Shield, Heart, Users, ArrowRight, Sparkles, LogIn, UserCircle, LogOut, Bot, User } from 'lucide-react';
-import { ThinkerIcon } from '@/components/icons/ThinkerIcon';
+import { processLogoToTransparent } from '@/utils/processLogo';
 
 // Import background images
 import therapySessionBg from '@/assets/therapy-session-bg.jpg';
@@ -20,6 +20,8 @@ const Index = () => {
   const [isAnimated, setIsAnimated] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  const [logoUrl, setLogoUrl] = useState('/lovable-uploads/bf2b2868-d68a-4c38-9824-dfd4ab14394e.png');
+  const [isProcessingLogo, setIsProcessingLogo] = useState(false);
   
   const backgroundImages = [
     therapySessionBg,
@@ -35,6 +37,27 @@ const Index = () => {
     }, 8000);
     return () => clearInterval(interval);
   }, [backgroundImages.length]);
+
+  // Process logo to remove background
+  useEffect(() => {
+    const processLogo = async () => {
+      if (!isProcessingLogo) {
+        setIsProcessingLogo(true);
+        try {
+          const transparentLogoUrl = await processLogoToTransparent();
+          setLogoUrl(transparentLogoUrl);
+          console.log('Logo processed successfully with transparent background');
+        } catch (error) {
+          console.error('Failed to process logo:', error);
+          // Keep original logo if processing fails
+        } finally {
+          setIsProcessingLogo(false);
+        }
+      }
+    };
+
+    processLogo();
+  }, []);
 
   const handleGetStarted = () => {
     setIsAnimated(true);
@@ -107,11 +130,12 @@ const Index = () => {
 
         <div className="text-center max-w-5xl mx-auto">
           <div className="flex items-center justify-center mb-8 animate-scale-in">
-            <div className="bg-gradient-wellness rounded-full p-2 mr-6 animate-glow" aria-hidden="true">
+            <div className="mr-6 animate-glow" aria-hidden="true">
               <img 
-                src="/lovable-uploads/bf2b2868-d68a-4c38-9824-dfd4ab14394e.png" 
+                src={logoUrl}
                 alt="Academy Health & Learning Logo" 
-                className="h-14 w-14 object-contain"
+                className="h-16 w-16 object-contain drop-shadow-lg"
+                style={{ filter: isProcessingLogo ? 'opacity(0.7)' : 'none' }}
               />
             </div>
             <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-wellness bg-clip-text text-transparent">
