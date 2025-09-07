@@ -13,16 +13,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 9%;
 
-    --primary: 268 83% 67%;
+    --primary: 203 100% 40%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 270 20% 98%;
-    --secondary-foreground: 270 8% 45%;
+    --secondary: 39 94% 49%;
+    --secondary-foreground: 0 0% 15%;
 
-    --muted: 270 20% 98%;
-    --muted-foreground: 270 8% 45%;
+    --muted: 222 76% 96%;
+    --muted-foreground: 222 20% 45%;
 
-    --accent: 268 83% 67%;
+    --accent: 352 75% 38%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
@@ -30,29 +30,27 @@
 
     --border: 270 12% 91%;
     --input: 270 12% 91%;
-    --ring: 268 83% 67%;
+    --ring: 203 100% 40%;
 
     --radius: 0.75rem;
     
-    /* Enhanced wellness-focused colors */
-    --wellness-purple: 268 83% 67%;
-    --wellness-purple-light: 270 100% 85%;
-    --wellness-purple-dark: 268 65% 55%;
-    --wellness-teal: 173 58% 39%;
-    --wellness-coral: 14 86% 74%;
-    --wellness-sage: 123 25% 65%;
+    /* Academy Health & Learning brand colors */
+    --academy-yellow: 39 94% 49%;
+    --academy-light-blue: 203 100% 40%;
+    --academy-red: 352 75% 38%;
+    --academy-dark-blue: 222 76% 33%;
     
-    /* Beautiful gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(268 83% 67%), hsl(270 100% 85%));
-    --gradient-wellness: linear-gradient(135deg, hsl(268 83% 67%), hsl(173 58% 39%));
-    --gradient-hero: linear-gradient(135deg, hsl(270 100% 95%), hsl(268 100% 98%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(270 20% 99%));
+    /* Beautiful gradients with brand colors */
+    --gradient-primary: linear-gradient(135deg, hsl(203 100% 40%), hsl(39 94% 49%));
+    --gradient-wellness: linear-gradient(135deg, hsl(203 100% 40%), hsl(222 76% 33%));
+    --gradient-hero: linear-gradient(135deg, hsl(203 100% 95%), hsl(39 94% 95%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(203 20% 99%));
     
-    /* Enhanced shadows with purple tint */
-    --shadow-glow: 0 0 40px hsl(268 83% 67% / 0.3);
-    --shadow-card: 0 8px 32px hsl(268 83% 67% / 0.08);
-    --shadow-button: 0 4px 20px hsl(268 83% 67% / 0.25);
-    --shadow-feature: 0 12px 24px hsl(268 83% 67% / 0.15);
+    /* Enhanced shadows with brand colors */
+    --shadow-glow: 0 0 40px hsl(203 100% 40% / 0.3);
+    --shadow-card: 0 8px 32px hsl(203 100% 40% / 0.08);
+    --shadow-button: 0 4px 20px hsl(203 100% 40% / 0.25);
+    --shadow-feature: 0 12px 24px hsl(203 100% 40% / 0.15);
 
     --sidebar-background: 0 0% 98%;
 
@@ -81,16 +79,16 @@
     --popover: 0 0% 11%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 268 83% 67%;
+    --primary: 203 100% 40%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 270 8% 15%;
-    --secondary-foreground: 270 20% 85%;
+    --secondary: 39 50% 25%;
+    --secondary-foreground: 39 94% 85%;
 
-    --muted: 270 8% 15%;
-    --muted-foreground: 270 20% 75%;
+    --muted: 222 50% 15%;
+    --muted-foreground: 222 50% 75%;
 
-    --accent: 268 83% 67%;
+    --accent: 352 75% 38%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
@@ -98,26 +96,24 @@
 
     --border: 270 8% 20%;
     --input: 270 8% 20%;
-    --ring: 268 83% 67%;
+    --ring: 203 100% 40%;
     
-    /* Dark mode wellness colors */
-    --wellness-purple: 268 83% 67%;
-    --wellness-purple-light: 270 70% 75%;
-    --wellness-purple-dark: 268 65% 45%;
-    --wellness-teal: 173 58% 49%;
-    --wellness-coral: 14 86% 74%;
-    --wellness-sage: 123 25% 65%;
+    /* Dark mode Academy brand colors */
+    --academy-yellow: 39 94% 60%;
+    --academy-light-blue: 203 100% 50%;
+    --academy-red: 352 75% 45%;
+    --academy-dark-blue: 222 76% 40%;
     
-    /* Dark gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(268 83% 67%), hsl(270 70% 75%));
-    --gradient-wellness: linear-gradient(135deg, hsl(268 83% 67%), hsl(173 58% 49%));
-    --gradient-hero: linear-gradient(135deg, hsl(270 8% 8%), hsl(268 8% 12%));
-    --gradient-card: linear-gradient(145deg, hsl(270 8% 11%), hsl(270 8% 15%));
+    /* Dark gradients with brand colors */
+    --gradient-primary: linear-gradient(135deg, hsl(203 100% 50%), hsl(39 94% 60%));
+    --gradient-wellness: linear-gradient(135deg, hsl(203 100% 50%), hsl(222 76% 40%));
+    --gradient-hero: linear-gradient(135deg, hsl(222 50% 8%), hsl(203 50% 12%));
+    --gradient-card: linear-gradient(145deg, hsl(222 30% 11%), hsl(203 30% 15%));
     
-    /* Dark shadows */
-    --shadow-glow: 0 0 40px hsl(268 83% 67% / 0.4);
+    /* Dark shadows with brand colors */
+    --shadow-glow: 0 0 40px hsl(203 100% 50% / 0.4);
     --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.3);
-    --shadow-button: 0 4px 20px hsl(268 83% 67% / 0.3);
+    --shadow-button: 0 4px 20px hsl(203 100% 50% / 0.3);
     --shadow-feature: 0 12px 24px hsl(0 0% 0% / 0.4);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;

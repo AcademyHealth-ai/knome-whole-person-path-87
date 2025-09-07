@@ -338,6 +338,15 @@ const Index = () => {
           </div>
         </div>
         
+        {/* Footer */}
+        <footer className="mt-24 py-8 border-t border-border/50">
+          <div className="text-center">
+            <p className="text-muted-foreground text-sm">
+              Powered by <span className="font-semibold text-primary">Academy Health & Learning</span>
+            </p>
+          </div>
+        </footer>
+        
         <AIAssistant open={assistantOpen} onOpenChange={setAssistantOpen} />
       </div>
     </SafeAreaView>
