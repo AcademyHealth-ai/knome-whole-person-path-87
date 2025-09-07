@@ -107,8 +107,12 @@ const Index = () => {
 
         <div className="text-center max-w-5xl mx-auto">
           <div className="flex items-center justify-center mb-8 animate-scale-in">
-            <div className="bg-gradient-wellness rounded-full p-4 mr-6 animate-glow" aria-hidden="true">
-              <ThinkerIcon className="h-10 w-10" />
+            <div className="bg-gradient-wellness rounded-full p-2 mr-6 animate-glow" aria-hidden="true">
+              <img 
+                src="/lovable-uploads/bf2b2868-d68a-4c38-9824-dfd4ab14394e.png" 
+                alt="Academy Health & Learning Logo" 
+                className="h-14 w-14 object-contain"
+              />
             </div>
             <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-wellness bg-clip-text text-transparent">
               KnoMe
